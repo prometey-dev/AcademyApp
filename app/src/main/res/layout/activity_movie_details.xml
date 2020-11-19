@@ -151,79 +151,58 @@
             android:textColor="@color/label_movie_name_color"
             app:layout_constraintTop_toBottomOf="@id/description"/>
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guide_25"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.25"/>
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guide_50"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"/>
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guide_75"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.75"/>
-
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/actor_1_image"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="7dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="8dp"
             android:scaleType="fitXY"
             app:srcCompat="@mipmap/actor1"
             android:adjustViewBounds="true"
             app:layout_constraintStart_toStartOf="@id/cast"
             app:layout_constraintTop_toBottomOf="@id/cast"
-            app:layout_constraintEnd_toStartOf="@id/guide_25"/>
+            app:layout_constraintEnd_toStartOf="@id/actor_2_image"
+            app:layout_constraintDimensionRatio="1:1"/>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/actor_2_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="8dp"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
             app:srcCompat="@mipmap/actor2"
-            app:layout_constraintStart_toEndOf="@id/guide_25"
+            app:layout_constraintStart_toEndOf="@id/actor_1_image"
             app:layout_constraintTop_toTopOf="@id/actor_1_image"
             app:layout_constraintBottom_toBottomOf="@id/actor_1_image"
-            app:layout_constraintEnd_toStartOf="@id/guide_50"/>
+            app:layout_constraintEnd_toStartOf="@id/actor_3_image"/>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/actor_3_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="8dp"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
             app:srcCompat="@mipmap/actor3"
-            app:layout_constraintStart_toEndOf="@id/guide_50"
+            app:layout_constraintStart_toEndOf="@id/actor_2_image"
             app:layout_constraintTop_toTopOf="@id/actor_2_image"
             app:layout_constraintBottom_toBottomOf="@id/actor_2_image"
-            app:layout_constraintEnd_toStartOf="@id/guide_75"/>
+            app:layout_constraintEnd_toStartOf="@id/actor_4_image"/>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/actor_4_image"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="4dp"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
             app:srcCompat="@mipmap/actor4"
             app:layout_constraintEnd_toEndOf="@+id/cast"
             app:layout_constraintTop_toTopOf="@id/actor_3_image"
-            app:layout_constraintStart_toEndOf="@id/guide_75"/>
+            app:layout_constraintStart_toEndOf="@id/actor_3_image"
+            app:layout_constraintDimensionRatio="1:1"/>
 
         <TextView
             android:id="@+id/actor_1_name"
