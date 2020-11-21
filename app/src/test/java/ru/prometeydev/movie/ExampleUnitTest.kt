@@ -1,4 +1,4 @@
-package ru.prometeydev.academyapp
+package ru.prometeydev.movie
 
 import org.junit.Test
 

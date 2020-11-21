@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
+
+    <!-- Button Back on MovieDetails screen -->
+    <style name="ButtonBackStyle">
+        <item name="android:layout_marginTop">@dimen/button_back_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/button_back_margin_start</item>
+        <item name="android:textSize">@dimen/button_back_text_size</item>
+        <item name="android:textColor">@color/label_reviews_color</item>
+        <item name="android:drawablePadding">@dimen/button_back_drawable_padding</item>
+        <item name="drawableStartCompat">@drawable/back_arrow</item>
+    </style>
+
+    <!-- Movie Logo on MovieDetails screen -->
+    <style name="MovieLogoStyle">
+        <item name="android:foreground">@drawable/mask_movie_logo_detail</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:adjustViewBounds">true</item>
+    </style>
+
+    <!-- Age Limit on MovieDetails screen -->
+    <style name="AgeLimit">
+        <item name="android:background">@drawable/rectangle_age_limit</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/age_limit_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Sides Margins -->
+    <style name="SideMarginsStyle">
+        <item name="android:layout_marginStart">@dimen/margin_detail_movie</item>
+        <item name="android:layout_marginEnd">@dimen/margin_detail_movie</item>
+    </style>
+
+    <!-- Movie Name style on MovieDetail screen-->
+    <style name="MovieNameStyle" parent="SideMarginsStyle">
+        <item name="android:textColor">@color/label_movie_name_color</item>
+        <item name="android:textSize">@dimen/movie_name_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:lineSpacingMultiplier">0.9</item>
+    </style>
+
+    <!-- Movie Genre style on MovieDetails screen-->
+    <style name="MovieGenreStyle" parent="SideMarginsStyle">
+        <item name="android:textColor">@color/label_movie_genre_color</item>
+        <item name="android:textSize">@dimen/movie_description_text_size</item>
+    </style>
+
+    <!-- Reviews Count style on MovieDetails screen -->
+    <style name="ReviewsCountStyle">
+        <item name="android:layout_marginStart">@dimen/reviews_count_margin_start</item>
+        <item name="android:textColor">@color/label_reviews_color</item>
+        <item name="android:textSize">@dimen/movie_description_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- Storyline style on MovieDetails screen -->
+    <style name="StorylineStyle" parent="SideMarginsStyle">
+        <item name="android:textColor">@color/label_movie_name_color</item>
+        <item name="android:textSize">@dimen/movie_description_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Movie Description style on MovieDetails screen -->
+    <style name="MovieDescriptionStyle" parent="SideMarginsStyle">
+        <item name="android:paddingTop">@dimen/movie_description_padding</item>
+        <item name="android:paddingBottom">@dimen/movie_description_padding</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:alpha">0.75</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:textSize">@dimen/movie_description_text_size</item>
+    </style>
+
+    <!-- Cast style on MovieDetails screen -->
+    <style name="CastStyle" parent="SideMarginsStyle">
+        <item name="android:textSize">@dimen/movie_description_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/label_movie_name_color</item>
+    </style>
+
+    <style name="ActorNameStyle">
+        <item name="android:layout_marginTop">@dimen/label_actor_name_margin_top</item>
+        <item name="android:textColor">@color/label_actor_color</item>
+        <item name="android:textSize">@dimen/label_actor_name_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>
