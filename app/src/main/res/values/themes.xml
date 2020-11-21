@@ -4,8 +4,8 @@
     <style name="Theme.Movie" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
 
     <style name="MyRatingBar" parent="Theme.AppCompat">
-        <item name="colorControlNormal">@color/star_shot_color</item>
-        <item name="colorControlActivated">@color/star_put_color</item>
+        <item name="android:colorControlNormal">@color/star_shot_color</item>
+        <item name="android:colorControlActivated">@color/star_put_color</item>
     </style>
 
 </resources>

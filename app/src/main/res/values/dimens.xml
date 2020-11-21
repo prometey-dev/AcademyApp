@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_detail_movie">16dp</dimen>
+    <dimen name="padding_bottom_detail_movie">12dp</dimen>
+    <dimen name="button_back_margin_top">56dp</dimen>
+    <dimen name="button_back_margin_start">18dp</dimen>
+    <dimen name="button_back_drawable_padding">8dp</dimen>
+    <dimen name="age_limit_margin_bottom_from_guideline">57dp</dimen>
+    <dimen name="movie_name_margin_top">8dp</dimen>
+    <dimen name="movie_genre_margin_top">4dp</dimen>
+    <dimen name="rating_bar_margin_top">8dp</dimen>
+    <dimen name="reviews_count_margin_start">9dp</dimen>
+    <dimen name="storyline_margin_top">28dp</dimen>
+    <dimen name="movie_description_margin_top">4dp</dimen>
+    <dimen name="movie_description_padding">10dp</dimen>
+    <dimen name="label_cast_margin_top">24dp</dimen>
+    <dimen name="actor_image_margin_top">7dp</dimen>
+    <dimen name="actor_image_margin_end">8dp</dimen>
+    <dimen name="label_actor_name_margin_top">6dp</dimen>
+
+    <dimen name="button_back_text_size">12sp</dimen>
+    <dimen name="age_limit_text_size">12sp</dimen>
+    <dimen name="movie_name_text_size">40sp</dimen>
+    <dimen name="movie_description_text_size">14sp</dimen>
+    <dimen name="label_actor_name_text_size">12sp</dimen>
+</resources>
