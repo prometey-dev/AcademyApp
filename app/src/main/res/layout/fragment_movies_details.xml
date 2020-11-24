@@ -11,8 +11,7 @@
         android:layout_height="wrap_content"
         android:background="@color/background_screen"
         android:scrollbars="vertical"
-        android:paddingBottom="@dimen/padding_bottom_detail_movie"
-        tools:context=".MainActivity">
+        android:paddingBottom="@dimen/padding_bottom_detail_movie">
 
         <ImageView
             android:id="@+id/movie_logo"

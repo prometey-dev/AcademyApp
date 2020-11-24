@@ -23,4 +23,16 @@
     <dimen name="movie_name_text_size">40sp</dimen>
     <dimen name="movie_description_text_size">14sp</dimen>
     <dimen name="label_actor_name_text_size">12sp</dimen>
+
+    <dimen name="movies_list_header_text_size">14sp</dimen>
+    <dimen name="movies_list_header_drawable_padding">8dp</dimen>
+    <dimen name="movie_list_margin_start">14dp</dimen>
+    <dimen name="movie_list_margin_top">27dp</dimen>
+    <dimen name="movie_image_height">248dp</dimen>
+    <dimen name="movie_image_margin">1dp</dimen>
+    <dimen name="movie_item_padding">8dp</dimen>
+    <dimen name="movie_genre_margin_bottom">4dp</dimen>
+    <dimen name="text_size_small">8sp</dimen>
+
+    <dimen name="movie_name_item_text_size">14sp</dimen>
 </resources>
