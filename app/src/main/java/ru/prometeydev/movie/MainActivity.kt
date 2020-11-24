@@ -3,9 +3,11 @@ package ru.prometeydev.movie
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
-class MovieDetailsActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_movie_details)
+        setContentView(R.layout.activity_main)
     }
+
 }

@@ -12,7 +12,7 @@
         android:background="@color/background_screen"
         android:scrollbars="vertical"
         android:paddingBottom="@dimen/padding_bottom_detail_movie"
-        tools:context=".MovieDetailsActivity">
+        tools:context=".MainActivity">
 
         <ImageView
             android:id="@+id/movie_logo"
