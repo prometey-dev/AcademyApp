@@ -35,12 +35,9 @@ class MainActivity : AppCompatActivity(), MovieItemClickListener {
      * Переход назад с экрана деталей фильма к списку фильмов
      */
     override fun goBack() {
-        fragmentMoviesList?.apply {
-            supportFragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.main_container, this)
-                    .commit()
-        }
+        supportFragmentManager.popBackStack()
     }
+
+
 
 }
