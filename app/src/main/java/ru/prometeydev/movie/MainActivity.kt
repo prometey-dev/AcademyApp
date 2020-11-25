@@ -38,6 +38,4 @@ class MainActivity : AppCompatActivity(), MovieItemClickListener {
         supportFragmentManager.popBackStack()
     }
 
-
-
 }
