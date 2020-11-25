@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 
-class FragmentMoviesDetails : Fragment() {
+class FragmentMoviesList : Fragment() {
 
     private var movieItemClickListener: MovieItemClickListener? = null
 
@@ -17,11 +17,11 @@ class FragmentMoviesDetails : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_movies_details, container,false )
+        val view = inflater.inflate(R.layout.fragment_movies_list, container, false)
 
-        view?.findViewById<TextView>(R.id.button_back)?.apply {
+        view?.findViewById<ImageView>(R.id.movie_main_item)?.apply {
             setOnClickListener {
-                movieItemClickListener?.goBack()
+                movieItemClickListener?.onMovieItemClicked()
             }
         }
 
