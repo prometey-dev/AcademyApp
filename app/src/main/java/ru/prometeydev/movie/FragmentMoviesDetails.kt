@@ -13,14 +13,15 @@ class FragmentMoviesDetails : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_movies_details, container,false )
 
-        view?.findViewById<TextView>(R.id.button_back)?.apply {
-            setOnClickListener {
-                fragmentManager?.popBackStack()
+        view.findViewById<TextView>(R.id.button_back)
+            .setOnClickListener {
+                activity?.let {
+                    it.supportFragmentManager.popBackStack()
+                }
             }
-        }
 
         return view
     }
