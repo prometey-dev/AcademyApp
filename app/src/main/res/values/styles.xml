@@ -2,6 +2,13 @@
 <resources>
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
 
+    <style name="RatingBarSmallest" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="android:progressDrawable">@drawable/rating_bar_smallest</item>
+        <item name="android:indeterminateDrawable">@drawable/rating_bar_smallest</item>
+        <item name="android:minHeight">8dp</item>
+        <item name="android:maxHeight">8dp</item>
+    </style>
+
     <!-- Button Back on MovieDetails screen -->
     <style name="ButtonBackStyle">
         <item name="android:layout_marginTop">@dimen/button_back_margin_top</item>
@@ -86,6 +93,37 @@
         <item name="android:layout_marginTop">@dimen/label_actor_name_margin_top</item>
         <item name="android:textColor">@color/label_actor_color</item>
         <item name="android:textSize">@dimen/label_actor_name_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MoviesListHeaderStyle">
+        <item name="android:textSize">@dimen/movies_list_header_text_size</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MovieGenreItemStyle">
+        <item name="android:textColor">@color/label_movie_genre_color</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+
+    <style name="ReviewsCountItemStyle">
+        <item name="android:textColor">@color/label_reviews_color</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="MovieNameItemStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/movie_name_item_text_size</item>
+    </style>
+
+    <style name="TimeMovieStyle">
+        <item name="android:textColor">@color/label_time_movie</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>
 
