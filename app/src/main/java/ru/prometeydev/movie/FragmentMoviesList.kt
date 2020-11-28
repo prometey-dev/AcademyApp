@@ -13,17 +13,18 @@ class FragmentMoviesList : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_movies_list, container, false)
 
-        view?.findViewById<ImageView>(R.id.movie_main_item)?.apply {
-            setOnClickListener {
-                fragmentManager?.beginTransaction()
-                        ?.addToBackStack(null)
-                        ?.replace(R.id.main_container, FragmentMoviesDetails())
-                        ?.commit()
+        view.findViewById<ImageView>(R.id.movie_main_item)
+            .setOnClickListener {
+                activity?.let {
+                    it.supportFragmentManager.beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.main_container, FragmentMoviesDetails())
+                        .commit()
+                }
             }
-        }
 
         return view
     }
