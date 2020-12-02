@@ -68,7 +68,7 @@ class FragmentMoviesList : Fragment() {
     }
 
     private val clickListener = object : MoviesAdapter.OnRecyclerItemClicked {
-        override fun onClick(movie: Movie) = doOnClick()
+        override fun onClick() = doOnClick()
     }
 
     companion object {

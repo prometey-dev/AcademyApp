@@ -42,7 +42,7 @@ class MoviesAdapter(
      * Интерфейс для обработки нажатия на элементе списка
      */
     interface OnRecyclerItemClicked {
-        fun onClick(movie: Movie)
+        fun onClick()
     }
 
     /**
@@ -67,6 +67,7 @@ class MoviesAdapter(
             reviewsCount.text = context.getString(R.string.reviews, movie.reviewsCount.toString())
             ageLimit.text  = context.getString(R.string.age_limit, movie.ageLimit.toString())
             filmCover.setImageResource(movie.filmCoverDrawable)
+
             like.setImageResource(
                     if (movie.hasLike)
                         R.drawable.ic_like_active
@@ -75,7 +76,7 @@ class MoviesAdapter(
             )
 
             itemView.setOnClickListener {
-                clickListener.onClick(movie)
+                clickListener.onClick()
             }
         }
 
