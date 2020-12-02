@@ -2,50 +2,19 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/background_screen">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/margin_small">
 
-    <TextView
-        android:id="@+id/movies_list_header"
-        style="@style/MoviesListHeaderStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="55dp"
-        android:text="@string/header_movies_list"
-        android:paddingStart="@dimen/margin_big"
-        android:paddingEnd="@dimen/margin_big"
-        android:drawablePadding="@dimen/margin_small"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:drawableStartCompat="@drawable/ic_target" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/movie_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/movie_list_margin_top"
-        android:layout_marginStart="@dimen/margin_small"
-        android:layout_marginEnd="@dimen/margin_small"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/movies_list_header"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:spanCount="2"
-        tools:listitem="@layout/view_holder_movie"/>
-
-    <!--<ImageView
+    <ImageView
         android:id="@+id/movie_main_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_big"
-        android:layout_marginTop="@dimen/movie_list_margin_top"
         android:background="@drawable/background_movie_item"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/movies_list_header"/>
-    
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <ImageView
         android:id="@+id/movie_item_image"
         android:layout_width="0dp"
@@ -56,10 +25,10 @@
         android:foreground="@drawable/foreground_movie_item"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
-        app:srcCompat="@drawable/avengers"
         app:layout_constraintStart_toStartOf="@id/movie_main_item"
         app:layout_constraintTop_toTopOf="@id/movie_main_item"
-        app:layout_constraintEnd_toEndOf="@id/movie_main_item"/>
+        app:layout_constraintEnd_toEndOf="@id/movie_main_item"
+        tools:srcCompat="@drawable/avengers"/>
 
     <TextView
         android:id="@+id/age_limit"
@@ -68,9 +37,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginTop="@dimen/margin_small"
-        android:text="@string/age_limit"
         app:layout_constraintStart_toStartOf="@id/movie_main_item"
-        app:layout_constraintTop_toTopOf="@+id/movie_main_item"/>
+        app:layout_constraintTop_toTopOf="@+id/movie_main_item"
+        tools:text="13+"/>
 
     <ImageView
         android:id="@+id/like_heart"
@@ -78,9 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="13dp"
         android:layout_marginEnd="6dp"
-        app:srcCompat="@drawable/ic_like"
         app:layout_constraintTop_toTopOf="@+id/movie_main_item"
-        app:layout_constraintEnd_toEndOf="@id/movie_main_item"/>
+        app:layout_constraintEnd_toEndOf="@id/movie_main_item"
+        tools:srcCompat="@drawable/ic_like_inactive"/>
 
     <TextView
         android:id="@+id/movie_genre"
@@ -90,10 +59,10 @@
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_tiny"
-        android:text="@string/action_adventure_fantasy"
         app:layout_constraintStart_toStartOf="@id/movie_main_item"
         app:layout_constraintBottom_toTopOf="@id/rating"
-        tools:ignore="SmallSp" />
+        tools:ignore="SmallSp"
+        tools:text="@string/action_adventure_fantasy"/>
 
     <RatingBar
         android:id="@+id/rating"
@@ -103,11 +72,11 @@
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small"
         android:layout_gravity="center"
-        android:rating="4"
         android:numStars="5"
         android:stepSize="1"
         app:layout_constraintStart_toStartOf="@id/movie_main_item"
-        app:layout_constraintBottom_toBottomOf="@id/movie_item_image"/>
+        app:layout_constraintBottom_toBottomOf="@id/movie_item_image"
+        tools:rating="4"/>
 
     <TextView
         android:id="@+id/reviews_count"
@@ -115,11 +84,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_small"
-        android:text="@string/reviews"
         app:layout_constraintStart_toEndOf="@id/rating"
         app:layout_constraintTop_toTopOf="@id/rating"
         app:layout_constraintBottom_toBottomOf="@id/rating"
-        tools:ignore="SmallSp" />
+        tools:ignore="SmallSp"
+        tools:text="125 Reviews"/>
 
     <TextView
         android:id="@+id/movie_name"
@@ -128,9 +97,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"
-        android:text="@string/avengers_end_game_movie_item"
         app:layout_constraintStart_toStartOf="@id/movie_main_item"
-        app:layout_constraintBottom_toTopOf="@id/time_movie"/>
+        app:layout_constraintBottom_toTopOf="@id/time_movie"
+        tools:text="@string/avengers_end_game_movie_item"/>
 
     <TextView
         android:id="@+id/time_movie"
@@ -139,9 +108,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small"
-        android:text="@string/movie_time"
         app:layout_constraintStart_toStartOf="@id/movie_main_item"
         app:layout_constraintBottom_toBottomOf="@id/movie_main_item"
-        tools:ignore="SmallSp" />-->
+        tools:ignore="SmallSp"
+        tools:text="137 min"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

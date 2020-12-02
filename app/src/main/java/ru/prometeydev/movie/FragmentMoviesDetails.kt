@@ -26,4 +26,8 @@ class FragmentMoviesDetails : Fragment() {
         return view
     }
 
+    companion object {
+        fun instance() = FragmentMoviesDetails()
+    }
+
 }
