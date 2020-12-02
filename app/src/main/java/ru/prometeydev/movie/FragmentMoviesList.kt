@@ -1,5 +1,6 @@
 package ru.prometeydev.movie
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,18 +17,23 @@ class FragmentMoviesList : Fragment() {
 
     private var recycler: RecyclerView? = null
 
+    private var spanCount = VERTICAL_SPAN_COUNT
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+            VERTICAL_SPAN_COUNT else HORIZONTAL_SPAN_COUNT
+
         return inflater.inflate(R.layout.fragment_movies_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recycler = view.findViewById(R.id.movie_list)
         recycler?.apply {
-            layoutManager = GridLayoutManager(context, 2)
+            layoutManager = GridLayoutManager(context, spanCount)
             adapter = MoviesAdapter(clickListener)
         }
     }
@@ -66,7 +72,11 @@ class FragmentMoviesList : Fragment() {
     }
 
     companion object {
+
         fun instance() = FragmentMoviesList()
+
+        const val VERTICAL_SPAN_COUNT = 2
+        const val HORIZONTAL_SPAN_COUNT = 4
     }
 
 }
