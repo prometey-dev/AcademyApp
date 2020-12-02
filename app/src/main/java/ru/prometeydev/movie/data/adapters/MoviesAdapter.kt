@@ -10,9 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.data.models.Movie
 
+/**
+ * Адаптер для списка фильмов
+ */
 class MoviesAdapter(
     private val clickListener: OnRecyclerItemClicked
-) : RecyclerView.Adapter<MoviesViewHolder>() {
+) : RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder>() {
 
     private var movies = listOf<Movie>()
 
@@ -24,10 +27,8 @@ class MoviesAdapter(
     }
 
     override fun onBindViewHolder(holder: MoviesViewHolder, position: Int) {
-        holder.onBind(movies[position])
-        holder.itemView.setOnClickListener {
-            clickListener.onClick(movies[position])
-        }
+        holder.onBind(movies[position], clickListener)
+
     }
 
     override fun getItemCount(): Int = movies.size
@@ -37,37 +38,47 @@ class MoviesAdapter(
         notifyDataSetChanged()
     }
 
+    /**
+     * Интерфейс для обработки нажатия на элементе списка
+     */
     interface OnRecyclerItemClicked {
         fun onClick(movie: Movie)
     }
 
-}
+    /**
+     * Холдер для списка фильмов
+     */
+    class MoviesViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-class MoviesViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        private val name = itemView.findViewById<TextView>(R.id.movie_name)
+        private val genre = itemView.findViewById<TextView>(R.id.movie_genre)
+        private val duration = itemView.findViewById<TextView>(R.id.time_movie)
+        private val rating = itemView.findViewById<RatingBar>(R.id.rating)
+        private val reviewsCount = itemView.findViewById<TextView>(R.id.reviews_count)
+        private val ageLimit = itemView.findViewById<TextView>(R.id.age_limit)
+        private val filmCover = itemView.findViewById<ImageView>(R.id.movie_item_image)
+        private val like = itemView.findViewById<ImageView>(R.id.like_heart)
 
-    private val name = itemView.findViewById<TextView>(R.id.movie_name)
-    private val genre = itemView.findViewById<TextView>(R.id.movie_genre)
-    private val duration = itemView.findViewById<TextView>(R.id.time_movie)
-    private val rating = itemView.findViewById<RatingBar>(R.id.rating)
-    private val reviewsCount = itemView.findViewById<TextView>(R.id.reviews_count)
-    private val ageLimit = itemView.findViewById<TextView>(R.id.age_limit)
-    private val filmCover = itemView.findViewById<ImageView>(R.id.movie_item_image)
-    private val like = itemView.findViewById<ImageView>(R.id.like_heart)
+        fun onBind(movie: Movie, clickListener: OnRecyclerItemClicked) {
+            name.text = movie.name
+            genre.text = movie.genre
+            duration.text = context.getString(R.string.movie_time, movie.duration.toString())
+            rating.rating = movie.rating
+            reviewsCount.text = context.getString(R.string.reviews, movie.reviewsCount.toString())
+            ageLimit.text  = context.getString(R.string.age_limit, movie.ageLimit.toString())
+            filmCover.setImageResource(movie.filmCoverDrawable)
+            like.setImageResource(
+                    if (movie.hasLike)
+                        R.drawable.ic_like_active
+                    else
+                        R.drawable.ic_like_inactive
+            )
 
-    fun onBind(movie: Movie) {
-        name.text = movie.name
-        genre.text = movie.genre
-        duration.text = context.getString(R.string.movie_time, movie.duration.toString())
-        rating.rating = movie.rating
-        reviewsCount.text = context.getString(R.string.reviews, movie.reviewsCount.toString())
-        ageLimit.text  = context.getString(R.string.age_limit, movie.ageLimit)
-        filmCover.setImageResource(movie.filmCoverDrawable)
-        like.setImageResource(
-            if (movie.hasLike)
-                R.drawable.ic_like_active
-            else
-                R.drawable.ic_like_inactive
-        )
+            itemView.setOnClickListener {
+                clickListener.onClick(movie)
+            }
+        }
+
     }
 
 }

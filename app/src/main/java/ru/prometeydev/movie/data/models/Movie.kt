@@ -1,7 +1,5 @@
 package ru.prometeydev.movie.data.models
 
-import androidx.annotation.DrawableRes
-
 data class Movie(
     val name: String,
     val genre: String,
