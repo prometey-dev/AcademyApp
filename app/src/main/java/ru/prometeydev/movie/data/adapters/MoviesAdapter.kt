@@ -62,10 +62,10 @@ class MoviesAdapter(
         fun onBind(movie: Movie, clickListener: OnRecyclerItemClicked) {
             name.text = movie.name
             genre.text = movie.genre
-            duration.text = context.getString(R.string.movie_time, movie.duration.toString())
+            duration.text = context.getString(R.string.movie_time, movie.duration)
             rating.rating = movie.rating
-            reviewsCount.text = context.getString(R.string.reviews, movie.reviewsCount.toString())
-            ageLimit.text  = context.getString(R.string.age_limit, movie.ageLimit.toString())
+            reviewsCount.text = context.getString(R.string.reviews, movie.reviewsCount)
+            ageLimit.text  = context.getString(R.string.age_limit, movie.ageLimit)
             filmCover.setImageResource(movie.filmCoverDrawable)
 
             like.setImageResource(

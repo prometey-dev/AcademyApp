@@ -57,13 +57,11 @@ class FragmentMoviesList : Fragment() {
     }
 
     private fun doOnClick() {
-        recycler?.let {
-            activity?.let {
-                it.supportFragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.main_container, FragmentMoviesDetails.instance())
-                    .commit()
-            }
+        activity?.let {
+            it.supportFragmentManager.beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.main_container, FragmentMoviesDetails.instance())
+                .commit()
         }
     }
 

@@ -32,10 +32,10 @@ class FragmentMoviesDetails : Fragment() {
             }
 
         view.findViewById<TextView>(R.id.age_limit)
-                .text = context?.getString(R.string.age_limit, 13.toString())
+                .text = context?.getString(R.string.age_limit, 13)
 
         view.findViewById<TextView>(R.id.reviews_count)
-                .text = context?.getString(R.string.reviews, 125.toString())
+                .text = context?.getString(R.string.reviews)
 
         return view
     }
