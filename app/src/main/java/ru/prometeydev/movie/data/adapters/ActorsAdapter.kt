@@ -20,11 +20,6 @@ class ActorsAdapter : RecyclerView.Adapter<ActorsAdapter.ActorsViewHolder>() {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.view_holder_actor, parent, false)
 
-        // Вычисляем ширину разделителя между элементами списка
-        val dividerWidth = (parent.context.resources.getDimension(R.dimen.margin_small) * parent.context.resources.displayMetrics.density).toInt()
-        // Устанавливаем ширину элемента списка
-        itemView.layoutParams.width =  (parent.measuredWidth - dividerWidth) / NUMBERS_OF_ITEM_TO_DISPLAY
-
         return ActorsViewHolder(itemView)
     }
 
@@ -52,11 +47,6 @@ class ActorsAdapter : RecyclerView.Adapter<ActorsAdapter.ActorsViewHolder>() {
             name.text = actor.name
         }
 
-    }
-
-    companion object {
-        // Число элементов отображаемых на экране
-        const val NUMBERS_OF_ITEM_TO_DISPLAY  = 4
     }
 
 }
