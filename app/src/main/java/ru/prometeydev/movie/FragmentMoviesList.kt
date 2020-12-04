@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,8 +62,7 @@ class FragmentMoviesList : Fragment() {
     }
 
     private fun doOnClick(movie: Movie) {
-        // Если нету информации по фильму то выводим сообщение
-        if (movie.additional == null) {
+        if (!movie.hasFullInfo()) {
             view?.let { showMessageMissed(it) }
             return
         }
@@ -76,10 +76,12 @@ class FragmentMoviesList : Fragment() {
     }
 
     private fun showMessageMissed(view: View) {
-        Snackbar.make(view, "Information missed", Snackbar.LENGTH_LONG)
-            .setBackgroundTint(resources.getColor(R.color.black))
-            .setTextColor(resources.getColor(R.color.star_put_color))
-            .show()
+        context?.let {
+            Snackbar.make(view, "Information missed", Snackbar.LENGTH_LONG)
+                .setBackgroundTint(ContextCompat.getColor(it, R.color.black))
+                .setTextColor(ContextCompat.getColor(it, R.color.star_put_color))
+                .show()
+        }
     }
 
     private val clickListener = object : MoviesAdapter.OnRecyclerItemClicked {

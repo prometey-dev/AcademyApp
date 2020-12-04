@@ -14,4 +14,8 @@ data class Movie(
     val filmCoverDrawable: Int,
     val hasLike: Boolean = false,
     val additional: MovieAdditional? = null
-)
+) {
+
+    fun hasFullInfo() = additional != null
+
+}
