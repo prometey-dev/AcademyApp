@@ -58,10 +58,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/avengers_end_game"
             app:layout_constraintTop_toBottomOf="@id/age_limit"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="@string/avengers_end_game"/>
 
         <TextView
             android:id="@+id/movie_genre"
@@ -69,11 +69,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_tiny"
-            android:text="@string/action_adventure_fantasy"
             android:textColor="@color/label_movie_genre_color"
             app:layout_constraintTop_toBottomOf="@id/movie_name"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="@string/action_adventure_fantasy"/>
 
         <RatingBar
             android:id="@+id/rating"
@@ -83,11 +83,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_small"
-            android:rating="4"
             android:numStars="5"
             android:stepSize="1"
             app:layout_constraintStart_toStartOf="@id/movie_genre"
-            app:layout_constraintTop_toBottomOf="@id/movie_genre"/>
+            app:layout_constraintTop_toBottomOf="@id/movie_genre"
+            tools:rating="4"/>
 
         <TextView
             android:id="@+id/reviews_count"
@@ -116,10 +116,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_tiny"
-            android:text="@string/text_description"
             app:layout_constraintTop_toBottomOf="@id/storyline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="@string/text_description"/>
 
         <TextView
             android:id="@+id/cast"

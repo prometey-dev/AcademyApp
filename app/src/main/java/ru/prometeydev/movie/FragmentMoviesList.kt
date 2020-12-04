@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import ru.prometeydev.movie.data.adapters.MoviesAdapter
 import ru.prometeydev.movie.data.domain.MoviesDataSource
 import ru.prometeydev.movie.data.models.Movie
@@ -16,6 +16,8 @@ import ru.prometeydev.movie.data.models.Movie
 class FragmentMoviesList : Fragment() {
 
     private var recycler: RecyclerView? = null
+
+    private var movies: List<Movie>? = null
 
     private var spanCount = VERTICAL_SPAN_COUNT
 
@@ -41,32 +43,47 @@ class FragmentMoviesList : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        movies = MoviesDataSource().getMovies()
         loadData()
     }
 
     override fun onDetach() {
         recycler = null
+        movies = null
 
         super.onDetach()
     }
 
     private fun loadData() {
         (recycler?.adapter as? MoviesAdapter)?.apply {
-            bindMovies(MoviesDataSource().getMovies())
+            movies?.let { bindMovies(it) }
         }
     }
 
-    private fun doOnClick() {
+    private fun doOnClick(movie: Movie) {
+        // Если нету информации по фильму то выводим сообщение
+        if (movie.additional == null) {
+            view?.let { showMessageMissed(it) }
+            return
+        }
+
         activity?.let {
             it.supportFragmentManager.beginTransaction()
                 .addToBackStack(null)
-                .replace(R.id.main_container, FragmentMoviesDetails.instance())
+                .replace(R.id.main_container, FragmentMoviesDetails.instance(movie))
                 .commit()
         }
     }
 
+    private fun showMessageMissed(view: View) {
+        Snackbar.make(view, "Information missed", Snackbar.LENGTH_LONG)
+            .setBackgroundTint(resources.getColor(R.color.black))
+            .setTextColor(resources.getColor(R.color.star_put_color))
+            .show()
+    }
+
     private val clickListener = object : MoviesAdapter.OnRecyclerItemClicked {
-        override fun onClick() = doOnClick()
+        override fun onClick(movie: Movie) = doOnClick(movie)
     }
 
     companion object {

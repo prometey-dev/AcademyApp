@@ -42,7 +42,7 @@ class MoviesAdapter(
      * Интерфейс для обработки нажатия на элементе списка
      */
     interface OnRecyclerItemClicked {
-        fun onClick()
+        fun onClick(movie: Movie)
     }
 
     /**
@@ -76,7 +76,7 @@ class MoviesAdapter(
             )
 
             itemView.setOnClickListener {
-                clickListener.onClick()
+                clickListener.onClick(movie)
             }
         }
 
