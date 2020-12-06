@@ -76,12 +76,10 @@ class FragmentMoviesList : Fragment() {
     }
 
     private fun showMessageMissed(view: View) {
-        context?.let {
-            Snackbar.make(view, "Information missed", Snackbar.LENGTH_LONG)
-                .setBackgroundTint(ContextCompat.getColor(it, R.color.black))
-                .setTextColor(ContextCompat.getColor(it, R.color.star_put_color))
-                .show()
-        }
+        Snackbar.make(view, "Information missed", Snackbar.LENGTH_LONG)
+            .setBackgroundTint(ContextCompat.getColor(view.context, R.color.black))
+            .setTextColor(ContextCompat.getColor(view.context, R.color.star_put_color))
+            .show()
     }
 
     private val clickListener = object : MoviesAdapter.OnRecyclerItemClicked {
