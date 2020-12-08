@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Movie</string>
 
-    <string name="age_limit">13+</string>
+    <string name="age_limit">%1$d+</string>
     <string name="avengers_end_game">Avengers:\nEnd Game</string>
     <string name="action_adventure_fantasy">Action, Adventure, Fantasy</string>
-    <string name="reviews">125 Reviews</string>
+    <string name="reviews">%1$d reviews</string>
     <string name="storyline">Storyline</string>
     <string name="text_description">After the devastating events of Avengers: Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more in order to reverse Thanos\' actions and restore balance to the universe.</string>
     <string name="cast">Cast</string>
@@ -14,7 +14,7 @@
     <string name="chris_hemsworth">Chris Hemsworth</string>
     <string name="button_back">Back</string>
     <string name="header_movies_list">Movies list</string>
-    <string name="movie_time">137 min</string>
+    <string name="movie_time">%1$d min</string>
     <string name="avengers_end_game_movie_item">Avengers: End Game</string>
 
 </resources>
