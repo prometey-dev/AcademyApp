@@ -7,8 +7,7 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
+import coil.load
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.data.Movie
 
@@ -21,11 +20,6 @@ class MoviesAdapter(
 
     private var movies = listOf<Movie>()
 
-    private val imageOptions = RequestOptions()
-        .placeholder(R.drawable.ic_image_placeholder)
-        .fallback(R.drawable.ic_image_placeholder)
-        .centerCrop()
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesViewHolder {
         return MoviesViewHolder(
             LayoutInflater.from(parent.context)
@@ -34,7 +28,7 @@ class MoviesAdapter(
     }
 
     override fun onBindViewHolder(holder: MoviesViewHolder, position: Int) {
-        holder.onBind(movies[position], imageOptions, clickListener)
+        holder.onBind(movies[position], clickListener)
     }
 
     override fun getItemCount(): Int = movies.size
@@ -65,7 +59,7 @@ class MoviesAdapter(
         private val filmCover = itemView.findViewById<ImageView>(R.id.movie_item_image)
         private val like = itemView.findViewById<ImageView>(R.id.like_heart)
 
-        fun onBind(movie: Movie, options: RequestOptions, clickListener: OnRecyclerItemClicked) {
+        fun onBind(movie: Movie, clickListener: OnRecyclerItemClicked) {
             name.text = movie.title
             genre.text = movie.genres.joinToString { it.name }
             duration.text = context.getString(R.string.movie_time, movie.runtime)
@@ -73,10 +67,11 @@ class MoviesAdapter(
             reviewsCount.text = context.getString(R.string.reviews, movie.numberOfRatings)
             ageLimit.text  = context.getString(R.string.age_limit, movie.minimumAge)
 
-            Glide.with(itemView)
-                .load(movie.poster)
-                .apply(options)
-                .into(filmCover)
+            filmCover.load(movie.poster) {
+                crossfade(true)
+                placeholder(R.drawable.ic_image_placeholder)
+                fallback(R.drawable.ic_image_placeholder)
+            }
 
             itemView.setOnClickListener {
                 clickListener.onClick(movie)

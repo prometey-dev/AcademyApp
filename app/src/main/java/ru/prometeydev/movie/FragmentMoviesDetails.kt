@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
 import com.google.android.material.snackbar.Snackbar
 import ru.prometeydev.movie.data.adapters.ActorsAdapter
 import ru.prometeydev.movie.data.Movie
@@ -43,12 +43,8 @@ class FragmentMoviesDetails : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadData()
 
-        val backdrop = view.findViewById<ImageView>(R.id.movie_logo)
-
-        Glide.with(view)
+        view.findViewById<ImageView>(R.id.movie_logo)
             .load(movie?.backdrop)
-            .centerCrop()
-            .into(backdrop)
 
         view.findViewById<TextView>(R.id.age_limit)
             .text = context?.getString(R.string.age_limit, movie?.minimumAge)
