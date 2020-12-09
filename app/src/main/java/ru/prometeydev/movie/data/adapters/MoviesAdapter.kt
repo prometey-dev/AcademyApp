@@ -7,8 +7,10 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.data.models.Movie
+import ru.prometeydev.movie.data.Movie
 
 /**
  * Адаптер для списка фильмов
@@ -19,6 +21,11 @@ class MoviesAdapter(
 
     private var movies = listOf<Movie>()
 
+    private val imageOptions = RequestOptions()
+        .placeholder(R.drawable.ic_image_placeholder)
+        .fallback(R.drawable.ic_image_placeholder)
+        .centerCrop()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesViewHolder {
         return MoviesViewHolder(
             LayoutInflater.from(parent.context)
@@ -27,8 +34,7 @@ class MoviesAdapter(
     }
 
     override fun onBindViewHolder(holder: MoviesViewHolder, position: Int) {
-        holder.onBind(movies[position], clickListener)
-
+        holder.onBind(movies[position], imageOptions, clickListener)
     }
 
     override fun getItemCount(): Int = movies.size
@@ -59,21 +65,18 @@ class MoviesAdapter(
         private val filmCover = itemView.findViewById<ImageView>(R.id.movie_item_image)
         private val like = itemView.findViewById<ImageView>(R.id.like_heart)
 
-        fun onBind(movie: Movie, clickListener: OnRecyclerItemClicked) {
-            name.text = movie.name
-            genre.text = movie.genre
-            duration.text = context.getString(R.string.movie_time, movie.duration)
-            rating.rating = movie.rating
-            reviewsCount.text = context.getString(R.string.reviews, movie.reviewsCount)
-            ageLimit.text  = context.getString(R.string.age_limit, movie.ageLimit)
-            filmCover.setImageResource(movie.filmCoverDrawable)
+        fun onBind(movie: Movie, options: RequestOptions, clickListener: OnRecyclerItemClicked) {
+            name.text = movie.title
+            genre.text = movie.genres.joinToString { it.name }
+            duration.text = context.getString(R.string.movie_time, movie.runtime)
+            rating.rating = movie.ratings
+            reviewsCount.text = context.getString(R.string.reviews, movie.numberOfRatings)
+            ageLimit.text  = context.getString(R.string.age_limit, movie.minimumAge)
 
-            like.setImageResource(
-                    if (movie.hasLike)
-                        R.drawable.ic_like_active
-                    else
-                        R.drawable.ic_like_inactive
-            )
+            Glide.with(itemView)
+                .load(movie.poster)
+                .apply(options)
+                .into(filmCover)
 
             itemView.setOnClickListener {
                 clickListener.onClick(movie)

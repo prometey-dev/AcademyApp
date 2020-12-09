@@ -17,4 +17,6 @@
     <string name="movie_time">%1$d min</string>
     <string name="avengers_end_game_movie_item">Avengers: End Game</string>
 
+    <string name="actors_not_laded_message">Actors list not loaded</string>
+
 </resources>

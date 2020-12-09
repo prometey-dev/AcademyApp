@@ -4,6 +4,7 @@ import ru.prometeydev.movie.R
 import ru.prometeydev.movie.data.models.Movie
 import ru.prometeydev.movie.data.models.MovieAdditional
 
+@Deprecated("not use")
 class MoviesDataSource {
     fun getMovies(): List<Movie> = listOf(
         Movie(

@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.data.models.Actor
+import ru.prometeydev.movie.data.Actor
 
 /**
  * Адаптер для списка актеров
@@ -43,7 +44,10 @@ class ActorsAdapter : RecyclerView.Adapter<ActorsAdapter.ActorsViewHolder>() {
         private val name = itemView.findViewById<TextView>(R.id.actor_name)
 
         fun onBind(actor: Actor) {
-            avatar.setImageResource(actor.avatarDrawable)
+            Glide.with(itemView)
+                .load(actor.picture)
+                .centerCrop()
+                .into(avatar)
             name.text = actor.name
         }
 

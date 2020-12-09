@@ -3,6 +3,7 @@ package ru.prometeydev.movie.data.domain
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.data.models.Actor
 
+@Deprecated("not use")
 class ActorsDataSource {
     fun getActors(): ArrayList<Actor> = arrayListOf(
         Actor(1,"Robert Downey Jr.", R.drawable.actor1),

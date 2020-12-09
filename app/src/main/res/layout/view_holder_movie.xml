@@ -93,12 +93,15 @@
     <TextView
         android:id="@+id/movie_name"
         style="@style/MovieNameItemStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"
+        android:maxLines="2"
+        android:ellipsize="end"
         app:layout_constraintStart_toStartOf="@id/movie_main_item"
         app:layout_constraintBottom_toTopOf="@id/time_movie"
+        app:layout_constraintEnd_toEndOf="@id/movie_main_item"
         tools:text="@string/avengers_end_game_movie_item"/>
 
     <TextView
@@ -107,7 +110,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_tiny"
         app:layout_constraintStart_toStartOf="@id/movie_main_item"
         app:layout_constraintBottom_toBottomOf="@id/movie_main_item"
         tools:ignore="SmallSp"

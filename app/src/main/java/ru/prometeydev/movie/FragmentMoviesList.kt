@@ -1,24 +1,25 @@
 package ru.prometeydev.movie
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
+import com.bumptech.glide.request.RequestOptions
+import kotlinx.coroutines.*
 import ru.prometeydev.movie.data.adapters.MoviesAdapter
-import ru.prometeydev.movie.data.domain.MoviesDataSource
-import ru.prometeydev.movie.data.models.Movie
+import ru.prometeydev.movie.data.Movie
+import ru.prometeydev.movie.data.loadMovies
 
 class FragmentMoviesList : Fragment() {
 
-    private var recycler: RecyclerView? = null
+    private var scope = CoroutineScope(Dispatchers.Default + Job())
 
-    private var movies: List<Movie>? = null
+    private var recycler: RecyclerView? = null
 
     private var spanCount = VERTICAL_SPAN_COUNT
 
@@ -44,42 +45,33 @@ class FragmentMoviesList : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        movies = MoviesDataSource().getMovies()
-        loadData()
+        scope.launch {
+            context?.let {
+                loadData(it)
+            }
+        }
     }
 
     override fun onDetach() {
         recycler = null
-        movies = null
 
         super.onDetach()
     }
 
-    private fun loadData() {
+    private suspend fun loadData(context: Context) = withContext(Dispatchers.Main) {
         (recycler?.adapter as? MoviesAdapter)?.apply {
-            movies?.let { bindMovies(it) }
+            val movies = loadMovies(context)
+            bindMovies(movies)
         }
     }
 
     private fun doOnClick(movie: Movie) {
-        if (!movie.hasFullInfo()) {
-            view?.let { showMessageMissed(it) }
-            return
-        }
-
         activity?.let {
             it.supportFragmentManager.beginTransaction()
                 .addToBackStack(null)
                 .replace(R.id.main_container, FragmentMoviesDetails.instance(movie))
                 .commit()
         }
-    }
-
-    private fun showMessageMissed(view: View) {
-        Snackbar.make(view, "Information missed", Snackbar.LENGTH_LONG)
-            .setBackgroundTint(ContextCompat.getColor(view.context, R.color.black))
-            .setTextColor(ContextCompat.getColor(view.context, R.color.star_put_color))
-            .show()
     }
 
     private val clickListener = object : MoviesAdapter.OnRecyclerItemClicked {

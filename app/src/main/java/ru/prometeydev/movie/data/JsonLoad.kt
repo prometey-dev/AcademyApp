@@ -33,6 +33,8 @@ private class JsonMovie(
     @SerialName("genre_ids")
     val genreIds: List<Int>,
     val actors: List<Int>,
+    @SerialName("vote_count")
+    val votesCount: Int,
     @SerialName("vote_average")
     val ratings: Float,
     val overview: String,
@@ -89,6 +91,8 @@ internal fun parseMovies(
             overview = jsonMovie.overview,
             poster = jsonMovie.posterPicture,
             backdrop = jsonMovie.backdropPicture,
+            numberOfRatings = jsonMovie.votesCount,
+            minimumAge = if (jsonMovie.adult) 16 else 13,
             ratings = jsonMovie.ratings,
             adult = jsonMovie.adult,
             runtime = jsonMovie.runtime,

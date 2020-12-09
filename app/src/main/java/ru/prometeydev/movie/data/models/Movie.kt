@@ -2,6 +2,7 @@ package ru.prometeydev.movie.data.models
 
 import androidx.annotation.DrawableRes
 
+@Deprecated("not use")
 data class Movie(
     val id: Long,
     val name: String,

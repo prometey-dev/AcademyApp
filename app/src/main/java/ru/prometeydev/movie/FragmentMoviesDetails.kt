@@ -12,11 +12,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import ru.prometeydev.movie.data.adapters.ActorsAdapter
-import ru.prometeydev.movie.data.domain.MoviesDataSource
-import ru.prometeydev.movie.data.models.Actor
-import ru.prometeydev.movie.data.models.Movie
-import ru.prometeydev.movie.data.models.MovieAdditional
+import ru.prometeydev.movie.data.Movie
 
 class FragmentMoviesDetails : Fragment() {
 
@@ -44,20 +43,24 @@ class FragmentMoviesDetails : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadData()
 
-        view.findViewById<ImageView>(R.id.movie_logo)
-            .setImageResource(movie?.additional!!.pictureDrawable)
+        val backdrop = view.findViewById<ImageView>(R.id.movie_logo)
+
+        Glide.with(view)
+            .load(movie?.backdrop)
+            .centerCrop()
+            .into(backdrop)
 
         view.findViewById<TextView>(R.id.age_limit)
-            .text = context?.getString(R.string.age_limit, movie?.ageLimit)
+            .text = context?.getString(R.string.age_limit, movie?.minimumAge)
 
-        view.findViewById<TextView>(R.id.movie_name).text = movie?.name
-        view.findViewById<TextView>(R.id.movie_genre).text = movie?.genre
-        view.findViewById<RatingBar>(R.id.rating).rating = movie?.rating ?: 0f
+        view.findViewById<TextView>(R.id.movie_name).text = movie?.title
+        view.findViewById<TextView>(R.id.movie_genre).text = movie?.genres?.joinToString { it.name }
+        view.findViewById<RatingBar>(R.id.rating).rating = movie?.ratings ?: 0f
 
         view.findViewById<TextView>(R.id.reviews_count)
-            .text = context?.getString(R.string.reviews, movie?.reviewsCount)
+            .text = context?.getString(R.string.reviews, movie?.numberOfRatings)
 
-        view.findViewById<TextView>(R.id.description).text = movie?.additional!!.storyLine
+        view.findViewById<TextView>(R.id.description).text = movie?.overview
 
         recycler = view.findViewById<RecyclerView>(R.id.actor_list).apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
@@ -70,6 +73,10 @@ class FragmentMoviesDetails : Fragment() {
             }
 
             addItemDecoration(itemDecorator)
+        }
+
+        if (movie?.actors.isNullOrEmpty()) {
+            Snackbar.make(view, R.string.actors_not_laded_message, Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -88,14 +95,13 @@ class FragmentMoviesDetails : Fragment() {
 
     private fun loadData() {
         arguments?.let {
-            val movieId = it.getLong(MOVIE_ID)
-            movie = MoviesDataSource().getMovies().firstOrNull { it.id == movieId }
+            movie = it.getParcelable(MOVIE)
         }
     }
 
     private fun loadActors() {
         (recycler?.adapter as? ActorsAdapter)?.apply {
-            bindActors(movie?.additional!!.actors)
+            movie?.let { bindActors(it.actors) }
         }
     }
 
@@ -103,11 +109,11 @@ class FragmentMoviesDetails : Fragment() {
 
         fun instance(movie: Movie) = FragmentMoviesDetails().apply {
             arguments = Bundle().apply {
-                putLong(MOVIE_ID, movie.id)
+                putParcelable(MOVIE, movie)
             }
         }
 
-        const val MOVIE_ID = "MOVIE_ID"
+        const val MOVIE = "MOVIE"
 
     }
 
