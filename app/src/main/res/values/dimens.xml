@@ -18,6 +18,8 @@
     <dimen name="movie_image_margin">1dp</dimen>
 
     <dimen name="actor_image_size">80dp</dimen>
+    <dimen name="card_movie_width">170dp</dimen>
+    <dimen name="card_movie_height">296dp</dimen>
 
     <!-- Text sizes -->
 
