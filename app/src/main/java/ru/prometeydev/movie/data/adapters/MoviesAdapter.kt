@@ -73,12 +73,6 @@ class MoviesAdapter(
             reviewsCount.text = context.getString(R.string.reviews, movie.numberOfRatings)
             ageLimit.text  = context.getString(R.string.age_limit, movie.minimumAge)
 
-            /*filmCover.load(movie.poster) {
-                crossfade(true)
-                placeholder(R.drawable.ic_image_placeholder)
-                fallback(R.drawable.ic_image_placeholder)
-            }*/
-
             scope.launch {
                 filmCover.load(loadImage(movie.poster)) {
                     crossfade(true)
