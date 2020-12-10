@@ -1,5 +1,6 @@
 package ru.prometeydev.movie.data.adapters
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,7 +8,10 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
 import coil.load
+import coil.request.ImageRequest
+import kotlinx.coroutines.*
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.data.Movie
 
@@ -50,6 +54,8 @@ class MoviesAdapter(
      */
     class MoviesViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
+        private var scope = CoroutineScope(Dispatchers.Default + Job())
+
         private val name = itemView.findViewById<TextView>(R.id.movie_name)
         private val genre = itemView.findViewById<TextView>(R.id.movie_genre)
         private val duration = itemView.findViewById<TextView>(R.id.time_movie)
@@ -67,15 +73,31 @@ class MoviesAdapter(
             reviewsCount.text = context.getString(R.string.reviews, movie.numberOfRatings)
             ageLimit.text  = context.getString(R.string.age_limit, movie.minimumAge)
 
-            filmCover.load(movie.poster) {
+            /*filmCover.load(movie.poster) {
                 crossfade(true)
                 placeholder(R.drawable.ic_image_placeholder)
                 fallback(R.drawable.ic_image_placeholder)
+            }*/
+
+            scope.launch {
+                filmCover.load(loadImage(movie.poster)) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_image_placeholder)
+                    fallback(R.drawable.ic_image_placeholder)
+                }
             }
 
             itemView.setOnClickListener {
                 clickListener.onClick(movie)
             }
+        }
+
+        private suspend fun loadImage(url: String): Drawable? = withContext(Dispatchers.IO) {
+            val imageLoader = ImageLoader(context)
+            val request = ImageRequest.Builder(context)
+                    .data(url)
+                    .build()
+            return@withContext imageLoader.execute(request).drawable
         }
 
     }
