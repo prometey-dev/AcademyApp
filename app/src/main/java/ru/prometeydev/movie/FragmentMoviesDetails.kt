@@ -44,36 +44,38 @@ class FragmentMoviesDetails : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadData()
 
-        view.findViewById<ImageView>(R.id.movie_logo)
-            .load(movie?.backdrop)
+        movie?.let {
+            view.findViewById<ImageView>(R.id.movie_logo)
+                    .load(it.backdrop)
 
-        view.findViewById<TextView>(R.id.age_limit)
-            .text = context?.getString(R.string.age_limit, movie?.minimumAge)
+            view.findViewById<TextView>(R.id.age_limit)
+                    .text = context?.getString(R.string.age_limit, it.minimumAge)
 
-        view.findViewById<TextView>(R.id.movie_name).text = movie?.title
-        view.findViewById<TextView>(R.id.movie_genre).text = movie?.genres?.joinToString { it.name }
-        view.findViewById<RatingBar>(R.id.rating).rating = movie?.ratings?.calculateStarsCount() ?: 0f
+            view.findViewById<TextView>(R.id.movie_name).text = it.title
+            view.findViewById<TextView>(R.id.movie_genre).text = it.genres.joinToString { it.name }
+            view.findViewById<RatingBar>(R.id.rating).rating = it.ratings.calculateStarsCount()
 
-        view.findViewById<TextView>(R.id.reviews_count)
-            .text = context?.getString(R.string.reviews, movie?.numberOfRatings)
+            view.findViewById<TextView>(R.id.reviews_count)
+                    .text = context?.getString(R.string.reviews, it.numberOfRatings)
 
-        view.findViewById<TextView>(R.id.description).text = movie?.overview
+            view.findViewById<TextView>(R.id.description).text = it.overview
 
-        recycler = view.findViewById<RecyclerView>(R.id.actor_list).apply {
-            layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+            recycler = view.findViewById<RecyclerView>(R.id.actor_list).apply {
+                layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
 
-            adapter = ActorsAdapter()
+                adapter = ActorsAdapter()
 
-            val itemDecorator = DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL)
-            ContextCompat.getDrawable(context, R.drawable.shape_divider_actors)?.let {
-                itemDecorator.setDrawable(it)
+                val itemDecorator = DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL)
+                ContextCompat.getDrawable(context, R.drawable.shape_divider_actors)?.let {
+                    itemDecorator.setDrawable(it)
+                }
+
+                addItemDecoration(itemDecorator)
             }
 
-            addItemDecoration(itemDecorator)
-        }
-
-        if (movie?.actors.isNullOrEmpty()) {
-            Snackbar.make(view, R.string.actors_not_laded_message, Snackbar.LENGTH_LONG).show()
+            if (it.actors.isNullOrEmpty()) {
+                Snackbar.make(view, R.string.actors_not_laded_message, Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 
