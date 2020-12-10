@@ -23,8 +23,6 @@ class FragmentMoviesList : Fragment() {
 
     private var spanCount = VERTICAL_SPAN_COUNT
 
-    private var movies: List<Movie> = listOf()
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,7 +66,7 @@ class FragmentMoviesList : Fragment() {
     }
 
     private suspend fun loadData(context: Context) = withContext(Dispatchers.Main) {
-        movies = loadMovies(context)
+        val movies = loadMovies(context)
         (recycler?.adapter as? MoviesAdapter)?.apply {
             bindMovies(movies)
         }
