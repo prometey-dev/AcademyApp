@@ -49,14 +49,14 @@ class FragmentMoviesDetails : Fragment() {
                     .load(it.backdrop)
 
             view.findViewById<TextView>(R.id.age_limit)
-                    .text = context?.getString(R.string.age_limit, it.minimumAge)
+                    .text = getString(R.string.age_limit, it.minimumAge)
 
             view.findViewById<TextView>(R.id.movie_name).text = it.title
             view.findViewById<TextView>(R.id.movie_genre).text = it.genres.joinToString { it.name }
             view.findViewById<RatingBar>(R.id.rating).rating = it.ratings.calculateStarsCount()
 
             view.findViewById<TextView>(R.id.reviews_count)
-                    .text = context?.getString(R.string.reviews, it.numberOfRatings)
+                    .text = getString(R.string.reviews, it.numberOfRatings)
 
             view.findViewById<TextView>(R.id.description).text = it.overview
 
