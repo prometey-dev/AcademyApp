@@ -63,7 +63,7 @@ class MoviesAdapter(
             name.text = movie.title
             genre.text = movie.genres.joinToString { it.name }
             duration.text = context.getString(R.string.movie_time, movie.runtime)
-            rating.rating = movie.ratings
+            rating.rating = movie.ratings.calculateStarsCount()
             reviewsCount.text = context.getString(R.string.reviews, movie.numberOfRatings)
             ageLimit.text  = context.getString(R.string.age_limit, movie.minimumAge)
 
@@ -84,3 +84,5 @@ class MoviesAdapter(
 
 private val RecyclerView.ViewHolder.context
     get() = this.itemView.context
+
+fun Float.calculateStarsCount(): Float = this / 2

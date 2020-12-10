@@ -16,6 +16,7 @@ import coil.load
 import com.google.android.material.snackbar.Snackbar
 import ru.prometeydev.movie.data.adapters.ActorsAdapter
 import ru.prometeydev.movie.data.Movie
+import ru.prometeydev.movie.data.adapters.calculateStarsCount
 
 class FragmentMoviesDetails : Fragment() {
 
@@ -51,7 +52,7 @@ class FragmentMoviesDetails : Fragment() {
 
         view.findViewById<TextView>(R.id.movie_name).text = movie?.title
         view.findViewById<TextView>(R.id.movie_genre).text = movie?.genres?.joinToString { it.name }
-        view.findViewById<RatingBar>(R.id.rating).rating = movie?.ratings ?: 0f
+        view.findViewById<RatingBar>(R.id.rating).rating = movie?.ratings?.calculateStarsCount() ?: 0f
 
         view.findViewById<TextView>(R.id.reviews_count)
             .text = context?.getString(R.string.reviews, movie?.numberOfRatings)
