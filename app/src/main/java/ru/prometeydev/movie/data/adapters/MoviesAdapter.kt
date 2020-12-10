@@ -73,25 +73,15 @@ class MoviesAdapter(
             reviewsCount.text = context.getString(R.string.reviews, movie.numberOfRatings)
             ageLimit.text  = context.getString(R.string.age_limit, movie.minimumAge)
 
-            scope.launch {
-                filmCover.load(loadImage(movie.poster)) {
-                    crossfade(true)
-                    placeholder(R.drawable.ic_image_placeholder)
-                    fallback(R.drawable.ic_image_placeholder)
-                }
+            filmCover.load(movie.poster) {
+                crossfade(true)
+                placeholder(R.drawable.ic_image_placeholder)
+                fallback(R.drawable.ic_image_placeholder)
             }
 
             itemView.setOnClickListener {
                 clickListener.onClick(movie)
             }
-        }
-
-        private suspend fun loadImage(url: String): Drawable? = withContext(Dispatchers.IO) {
-            val imageLoader = ImageLoader(context)
-            val request = ImageRequest.Builder(context)
-                    .data(url)
-                    .build()
-            return@withContext imageLoader.execute(request).drawable
         }
 
     }
