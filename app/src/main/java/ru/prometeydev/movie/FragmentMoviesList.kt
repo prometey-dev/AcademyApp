@@ -3,6 +3,7 @@ package ru.prometeydev.movie
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,8 @@ class FragmentMoviesList : Fragment() {
     private var recycler: RecyclerView? = null
 
     private var spanCount = VERTICAL_SPAN_COUNT
+
+    private var movies: List<Movie> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,14 +60,35 @@ class FragmentMoviesList : Fragment() {
         super.onDetach()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        recycler?.let {
+            outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, it.layoutManager?.onSaveInstanceState())
+        }
+    }
+
     private suspend fun loadData(context: Context) = withContext(Dispatchers.Main) {
+        movies = loadMovies(context)
         (recycler?.adapter as? MoviesAdapter)?.apply {
-            val movies = loadMovies(context)
             bindMovies(movies)
+        }
+        recyclerRestoreState()
+    }
+
+    private fun recyclerRestoreState() {
+        arguments?.let {
+            val savedRecyclerLayoutState: Parcelable? = it.getParcelable(BUNDLE_RECYCLER_LAYOUT)
+            recycler?.layoutManager?.onRestoreInstanceState(savedRecyclerLayoutState)
         }
     }
 
     private fun doOnClick(movie: Movie) {
+        recycler?.let {
+            arguments = Bundle().apply {
+                putParcelable(BUNDLE_RECYCLER_LAYOUT, it.layoutManager?.onSaveInstanceState())
+            }
+        }
+
         activity?.let {
             it.supportFragmentManager.beginTransaction()
                 .addToBackStack(null)
@@ -83,6 +107,8 @@ class FragmentMoviesList : Fragment() {
 
         const val VERTICAL_SPAN_COUNT = 2
         const val HORIZONTAL_SPAN_COUNT = 4
+
+        const val BUNDLE_RECYCLER_LAYOUT = "BUNDLE_RECYCLER_LAYOUT "
     }
 
 }
