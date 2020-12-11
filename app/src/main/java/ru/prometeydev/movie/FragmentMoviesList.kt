@@ -23,6 +23,8 @@ class FragmentMoviesList : Fragment() {
 
     private var spanCount = VERTICAL_SPAN_COUNT
 
+    private var savedRecyclerLayoutState: Parcelable? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,8 +62,27 @@ class FragmentMoviesList : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        recycler?.let {
-            outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, it.layoutManager?.onSaveInstanceState())
+
+        if (isStateSaved) {
+            recycler?.let {
+                outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, it.layoutManager?.onSaveInstanceState())
+            }
+        } else {
+            arguments = outState
+            recycler?.let {
+                arguments?.putParcelable(BUNDLE_RECYCLER_LAYOUT, it.layoutManager?.onSaveInstanceState())
+            }
+        }
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT)
+        } else {
+            arguments?.let {
+                savedRecyclerLayoutState = it.getParcelable(BUNDLE_RECYCLER_LAYOUT)
+            }
         }
     }
 
@@ -70,22 +91,11 @@ class FragmentMoviesList : Fragment() {
         (recycler?.adapter as? MoviesAdapter)?.apply {
             bindMovies(movies)
         }
-        recyclerRestoreState()
-    }
-
-    private fun recyclerRestoreState() {
-        arguments?.let {
-            val savedRecyclerLayoutState: Parcelable? = it.getParcelable(BUNDLE_RECYCLER_LAYOUT)
-            recycler?.layoutManager?.onRestoreInstanceState(savedRecyclerLayoutState)
-        }
+        recycler?.layoutManager?.onRestoreInstanceState(savedRecyclerLayoutState)
     }
 
     private fun doOnClick(movie: Movie) {
-        recycler?.let {
-            arguments = Bundle().apply {
-                putParcelable(BUNDLE_RECYCLER_LAYOUT, it.layoutManager?.onSaveInstanceState())
-            }
-        }
+        onSaveInstanceState(Bundle())
 
         activity?.let {
             it.supportFragmentManager.beginTransaction()
@@ -93,7 +103,11 @@ class FragmentMoviesList : Fragment() {
                 .replace(R.id.main_container, FragmentMoviesDetails.instance(movie))
                 .commit()
         }
+
+
     }
+
+
 
     private val clickListener = object : MoviesAdapter.OnRecyclerItemClicked {
         override fun onClick(movie: Movie) = doOnClick(movie)
