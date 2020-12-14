@@ -44,21 +44,21 @@ class FragmentMoviesDetails : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadData()
 
-        movie?.let {
+        movie?.let { mov ->
             view.findViewById<ImageView>(R.id.movie_logo)
-                    .load(it.backdrop)
+                    .load(mov.backdrop)
 
             view.findViewById<TextView>(R.id.age_limit)
-                    .text = getString(R.string.age_limit, it.minimumAge)
+                    .text = getString(R.string.age_limit, mov.minimumAge)
 
-            view.findViewById<TextView>(R.id.movie_name).text = it.title
-            view.findViewById<TextView>(R.id.movie_genre).text = it.genres.joinToString { it.name }
-            view.findViewById<RatingBar>(R.id.rating).rating = it.ratings.calculateStarsCount()
+            view.findViewById<TextView>(R.id.movie_name).text = mov.title
+            view.findViewById<TextView>(R.id.movie_genre).text = mov.genres.joinToString { it.name }
+            view.findViewById<RatingBar>(R.id.rating).rating = mov.ratings.calculateStarsCount()
 
             view.findViewById<TextView>(R.id.reviews_count)
-                    .text = getString(R.string.reviews, it.numberOfRatings)
+                    .text = getString(R.string.reviews, mov.numberOfRatings)
 
-            view.findViewById<TextView>(R.id.description).text = it.overview
+            view.findViewById<TextView>(R.id.description).text = mov.overview
 
             recycler = view.findViewById<RecyclerView>(R.id.actor_list).apply {
                 layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
@@ -73,7 +73,7 @@ class FragmentMoviesDetails : Fragment() {
                 addItemDecoration(itemDecorator)
             }
 
-            if (it.actors.isNullOrEmpty()) {
+            if (mov.actors.isNullOrEmpty()) {
                 Snackbar.make(view, R.string.actors_not_laded_message, Snackbar.LENGTH_LONG).show()
             }
         }
