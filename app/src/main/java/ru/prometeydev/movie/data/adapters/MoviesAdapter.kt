@@ -1,5 +1,6 @@
 package ru.prometeydev.movie.data.adapters
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,8 +8,12 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
+import coil.load
+import coil.request.ImageRequest
+import kotlinx.coroutines.*
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.data.models.Movie
+import ru.prometeydev.movie.data.Movie
 
 /**
  * Адаптер для списка фильмов
@@ -28,7 +33,6 @@ class MoviesAdapter(
 
     override fun onBindViewHolder(holder: MoviesViewHolder, position: Int) {
         holder.onBind(movies[position], clickListener)
-
     }
 
     override fun getItemCount(): Int = movies.size
@@ -50,6 +54,8 @@ class MoviesAdapter(
      */
     class MoviesViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
+        private var scope = CoroutineScope(Dispatchers.Default + Job())
+
         private val name = itemView.findViewById<TextView>(R.id.movie_name)
         private val genre = itemView.findViewById<TextView>(R.id.movie_genre)
         private val duration = itemView.findViewById<TextView>(R.id.time_movie)
@@ -60,20 +66,18 @@ class MoviesAdapter(
         private val like = itemView.findViewById<ImageView>(R.id.like_heart)
 
         fun onBind(movie: Movie, clickListener: OnRecyclerItemClicked) {
-            name.text = movie.name
-            genre.text = movie.genre
-            duration.text = context.getString(R.string.movie_time, movie.duration)
-            rating.rating = movie.rating
-            reviewsCount.text = context.getString(R.string.reviews, movie.reviewsCount)
-            ageLimit.text  = context.getString(R.string.age_limit, movie.ageLimit)
-            filmCover.setImageResource(movie.filmCoverDrawable)
+            name.text = movie.title
+            genre.text = movie.genres.joinToString { it.name }
+            duration.text = context.getString(R.string.movie_time, movie.runtime)
+            rating.rating = movie.ratings.calculateStarsCount()
+            reviewsCount.text = context.getString(R.string.reviews, movie.numberOfRatings)
+            ageLimit.text  = context.getString(R.string.age_limit, movie.minimumAge)
 
-            like.setImageResource(
-                    if (movie.hasLike)
-                        R.drawable.ic_like_active
-                    else
-                        R.drawable.ic_like_inactive
-            )
+            filmCover.load(movie.poster) {
+                crossfade(true)
+                placeholder(R.drawable.ic_image_placeholder)
+                fallback(R.drawable.ic_image_placeholder)
+            }
 
             itemView.setOnClickListener {
                 clickListener.onClick(movie)
@@ -86,3 +90,5 @@ class MoviesAdapter(
 
 private val RecyclerView.ViewHolder.context
     get() = this.itemView.context
+
+fun Float.calculateStarsCount(): Float = this / 2

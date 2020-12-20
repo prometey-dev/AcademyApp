@@ -1,26 +1,29 @@
 package ru.prometeydev.movie
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.*
 import ru.prometeydev.movie.data.adapters.MoviesAdapter
-import ru.prometeydev.movie.data.domain.MoviesDataSource
-import ru.prometeydev.movie.data.models.Movie
+import ru.prometeydev.movie.data.Movie
+import ru.prometeydev.movie.data.loadMovies
 
 class FragmentMoviesList : Fragment() {
 
+    private var scope = CoroutineScope(Dispatchers.Default + Job())
+
     private var recycler: RecyclerView? = null
 
-    private var movies: List<Movie>? = null
-
     private var spanCount = VERTICAL_SPAN_COUNT
+
+    private var savedRecyclerLayoutState: Parcelable? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,28 +47,55 @@ class FragmentMoviesList : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        movies = MoviesDataSource().getMovies()
-        loadData()
+        scope.launch {
+            context?.let {
+                loadData(it)
+            }
+        }
     }
 
     override fun onDetach() {
         recycler = null
-        movies = null
 
         super.onDetach()
     }
 
-    private fun loadData() {
-        (recycler?.adapter as? MoviesAdapter)?.apply {
-            movies?.let { bindMovies(it) }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        if (isStateSaved) {
+            recycler?.let {
+                outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, it.layoutManager?.onSaveInstanceState())
+            }
+        } else {
+            arguments = outState
+            recycler?.let {
+                arguments?.putParcelable(BUNDLE_RECYCLER_LAYOUT, it.layoutManager?.onSaveInstanceState())
+            }
         }
     }
 
-    private fun doOnClick(movie: Movie) {
-        if (!movie.hasFullInfo()) {
-            view?.let { showMessageMissed(it) }
-            return
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT)
+        } else {
+            arguments?.let {
+                savedRecyclerLayoutState = it.getParcelable(BUNDLE_RECYCLER_LAYOUT)
+            }
         }
+    }
+
+    private suspend fun loadData(context: Context) = withContext(Dispatchers.Main) {
+        val movies = loadMovies(context)
+        (recycler?.adapter as? MoviesAdapter)?.apply {
+            bindMovies(movies)
+        }
+        recycler?.layoutManager?.onRestoreInstanceState(savedRecyclerLayoutState)
+    }
+
+    private fun doOnClick(movie: Movie) {
+        onSaveInstanceState(Bundle())
 
         activity?.let {
             it.supportFragmentManager.beginTransaction()
@@ -73,14 +103,11 @@ class FragmentMoviesList : Fragment() {
                 .replace(R.id.main_container, FragmentMoviesDetails.instance(movie))
                 .commit()
         }
+
+
     }
 
-    private fun showMessageMissed(view: View) {
-        Snackbar.make(view, "Information missed", Snackbar.LENGTH_LONG)
-            .setBackgroundTint(ContextCompat.getColor(view.context, R.color.black))
-            .setTextColor(ContextCompat.getColor(view.context, R.color.star_put_color))
-            .show()
-    }
+
 
     private val clickListener = object : MoviesAdapter.OnRecyclerItemClicked {
         override fun onClick(movie: Movie) = doOnClick(movie)
@@ -92,6 +119,8 @@ class FragmentMoviesList : Fragment() {
 
         const val VERTICAL_SPAN_COUNT = 2
         const val HORIZONTAL_SPAN_COUNT = 4
+
+        const val BUNDLE_RECYCLER_LAYOUT = "BUNDLE_RECYCLER_LAYOUT "
     }
 
 }

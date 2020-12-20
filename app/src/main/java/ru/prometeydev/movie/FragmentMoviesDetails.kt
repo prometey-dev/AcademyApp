@@ -12,11 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import com.google.android.material.snackbar.Snackbar
 import ru.prometeydev.movie.data.adapters.ActorsAdapter
-import ru.prometeydev.movie.data.domain.MoviesDataSource
-import ru.prometeydev.movie.data.models.Actor
-import ru.prometeydev.movie.data.models.Movie
-import ru.prometeydev.movie.data.models.MovieAdditional
+import ru.prometeydev.movie.data.Movie
+import ru.prometeydev.movie.data.adapters.calculateStarsCount
 
 class FragmentMoviesDetails : Fragment() {
 
@@ -44,32 +44,38 @@ class FragmentMoviesDetails : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadData()
 
-        view.findViewById<ImageView>(R.id.movie_logo)
-            .setImageResource(movie?.additional!!.pictureDrawable)
+        movie?.let { mov ->
+            view.findViewById<ImageView>(R.id.movie_logo)
+                    .load(mov.backdrop)
 
-        view.findViewById<TextView>(R.id.age_limit)
-            .text = context?.getString(R.string.age_limit, movie?.ageLimit)
+            view.findViewById<TextView>(R.id.age_limit)
+                    .text = getString(R.string.age_limit, mov.minimumAge)
 
-        view.findViewById<TextView>(R.id.movie_name).text = movie?.name
-        view.findViewById<TextView>(R.id.movie_genre).text = movie?.genre
-        view.findViewById<RatingBar>(R.id.rating).rating = movie?.rating ?: 0f
+            view.findViewById<TextView>(R.id.movie_name).text = mov.title
+            view.findViewById<TextView>(R.id.movie_genre).text = mov.genres.joinToString { it.name }
+            view.findViewById<RatingBar>(R.id.rating).rating = mov.ratings.calculateStarsCount()
 
-        view.findViewById<TextView>(R.id.reviews_count)
-            .text = context?.getString(R.string.reviews, movie?.reviewsCount)
+            view.findViewById<TextView>(R.id.reviews_count)
+                    .text = getString(R.string.reviews, mov.numberOfRatings)
 
-        view.findViewById<TextView>(R.id.description).text = movie?.additional!!.storyLine
+            view.findViewById<TextView>(R.id.description).text = mov.overview
 
-        recycler = view.findViewById<RecyclerView>(R.id.actor_list).apply {
-            layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+            recycler = view.findViewById<RecyclerView>(R.id.actor_list).apply {
+                layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
 
-            adapter = ActorsAdapter()
+                adapter = ActorsAdapter()
 
-            val itemDecorator = DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL)
-            ContextCompat.getDrawable(context, R.drawable.shape_divider_actors)?.let {
-                itemDecorator.setDrawable(it)
+                val itemDecorator = DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL)
+                ContextCompat.getDrawable(context, R.drawable.shape_divider_actors)?.let {
+                    itemDecorator.setDrawable(it)
+                }
+
+                addItemDecoration(itemDecorator)
             }
 
-            addItemDecoration(itemDecorator)
+            if (mov.actors.isNullOrEmpty()) {
+                Snackbar.make(view, R.string.actors_not_laded_message, Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -88,14 +94,13 @@ class FragmentMoviesDetails : Fragment() {
 
     private fun loadData() {
         arguments?.let {
-            val movieId = it.getLong(MOVIE_ID)
-            movie = MoviesDataSource().getMovies().firstOrNull { it.id == movieId }
+            movie = it.getParcelable(MOVIE)
         }
     }
 
     private fun loadActors() {
         (recycler?.adapter as? ActorsAdapter)?.apply {
-            bindActors(movie?.additional!!.actors)
+            movie?.let { bindActors(it.actors) }
         }
     }
 
@@ -103,11 +108,11 @@ class FragmentMoviesDetails : Fragment() {
 
         fun instance(movie: Movie) = FragmentMoviesDetails().apply {
             arguments = Bundle().apply {
-                putLong(MOVIE_ID, movie.id)
+                putParcelable(MOVIE, movie)
             }
         }
 
-        const val MOVIE_ID = "MOVIE_ID"
+        const val MOVIE = "MOVIE"
 
     }
 

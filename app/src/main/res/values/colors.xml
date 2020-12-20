@@ -17,4 +17,7 @@
     <color name="label_reviews_color">#6D6D80</color>
     <color name="label_actor_color">#D8D8D8</color>
     <color name="label_time_movie">#565665</color>
+
+    <color name="card_movie_background">#FF222232</color>
+    <color name="card_border_color">#7F636375</color>
 </resources>
