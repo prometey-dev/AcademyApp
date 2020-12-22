@@ -115,7 +115,7 @@ class FragmentMoviesList : Fragment() {
 
     companion object {
 
-        fun instance() = FragmentMoviesList()
+        fun instance(step: String) = FragmentMoviesList()
 
         const val VERTICAL_SPAN_COUNT = 2
         const val HORIZONTAL_SPAN_COUNT = 4
