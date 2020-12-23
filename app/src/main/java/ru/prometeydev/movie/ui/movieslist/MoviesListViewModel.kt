@@ -7,17 +7,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.prometeydev.movie.data.Movie
-import ru.prometeydev.movie.data.loadMovies
+import ru.prometeydev.movie.data.MoviesRepository
 
-class MoviesListViewModel: ViewModel() {
+class MoviesListViewModel(
+    private val repository: MoviesRepository
+): ViewModel() {
 
     private val _mutableMoviesListState = MutableLiveData<List<Movie>>(emptyList())
 
     val moviesListState: LiveData<List<Movie>> get() = _mutableMoviesListState
 
-    fun updateMovies(context: Context) {
+    fun updateMovies() {
         viewModelScope.launch {
-            _mutableMoviesListState.value = loadMovies(context)
+            _mutableMoviesListState.value = repository.loadMovies()
         }
     }
 

@@ -41,9 +41,7 @@ class MoviesListFragment : MoviesListNavigable() {
     override fun onStart() {
         super.onStart()
 
-        context?.let {
-            viewModel.updateMovies(it)
-        }
+        viewModel.updateMovies()
     }
 
     override fun onDestroyView() {
