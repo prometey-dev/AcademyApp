@@ -34,9 +34,7 @@ class MoviesDetailsFragment : MoviesDetailsNavigable() {
 
         loadData()
         movie?.let { setupViews(view, it) }
-        viewModel.actorsListEmptyState.observe(this.viewLifecycleOwner, {
-            this.showMessageIfNeeded(it, view)
-        })
+        viewModel.actorsListEmptyState.observe(this.viewLifecycleOwner, this::showMessageIfNeeded)
     }
 
     override fun onStart() {
@@ -102,7 +100,7 @@ class MoviesDetailsFragment : MoviesDetailsNavigable() {
         }
     }
 
-    private fun showMessageIfNeeded(isNotActors: Boolean, view: View) {
+    private fun showMessageIfNeeded(isNotActors: Boolean) {
         if (isNotActors) {
             showMessage(getString(R.string.actors_not_laded_message))
         }
