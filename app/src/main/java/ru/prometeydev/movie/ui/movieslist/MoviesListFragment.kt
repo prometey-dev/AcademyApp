@@ -1,23 +1,24 @@
-package ru.prometeydev.movie
+package ru.prometeydev.movie.ui.movieslist
 
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.*
+import ru.prometeydev.movie.R
+import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.data.adapters.MoviesAdapter
 import ru.prometeydev.movie.data.Movie
-import ru.prometeydev.movie.data.loadMovies
 
-class FragmentMoviesList : Fragment() {
+class MoviesListFragment : MoviesListNavigable<MoviesListViewModel>() {
 
-    private var scope = CoroutineScope(Dispatchers.Default + Job())
+    private val viewModel: MoviesListViewModel by viewModels { ViewModelProviderFactory() }
+
+    private var moviesAdapter: MoviesAdapter? = null
 
     private var recycler: RecyclerView? = null
 
@@ -30,34 +31,30 @@ class FragmentMoviesList : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-            VERTICAL_SPAN_COUNT else HORIZONTAL_SPAN_COUNT
-
         return inflater.inflate(R.layout.fragment_movies_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        recycler = view.findViewById(R.id.movie_list)
-        recycler?.apply {
-            layoutManager = GridLayoutManager(context, spanCount)
-            adapter = MoviesAdapter(clickListener)
-        }
+        super.onViewCreated(view, savedInstanceState)
+
+        setupViews(view)
+
+        viewModel.moviesListState.observe(this.viewLifecycleOwner, this::loadData)
     }
 
     override fun onStart() {
         super.onStart()
 
-        scope.launch {
-            context?.let {
-                loadData(it)
-            }
+        context?.let {
+            viewModel.updateMovies(it)
         }
     }
 
-    override fun onDetach() {
+    override fun onDestroyView() {
+        recycler?.adapter = null
         recycler = null
 
-        super.onDetach()
+        super.onDestroyView()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -86,28 +83,27 @@ class FragmentMoviesList : Fragment() {
         }
     }
 
-    private suspend fun loadData(context: Context) = withContext(Dispatchers.Main) {
-        val movies = loadMovies(context)
-        (recycler?.adapter as? MoviesAdapter)?.apply {
-            bindMovies(movies)
+    private fun setupViews(view: View) {
+        spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+            VERTICAL_SPAN_COUNT else HORIZONTAL_SPAN_COUNT
+
+        moviesAdapter = MoviesAdapter(clickListener)
+        recycler = view.findViewById(R.id.movie_list)
+        recycler?.apply {
+            layoutManager = GridLayoutManager(context, spanCount)
+            adapter = moviesAdapter
         }
-        recycler?.layoutManager?.onRestoreInstanceState(savedRecyclerLayoutState)
+    }
+
+    private fun loadData(movies: List<Movie>) {
+        moviesAdapter?.bindMovies(movies)
     }
 
     private fun doOnClick(movie: Movie) {
         onSaveInstanceState(Bundle())
 
-        activity?.let {
-            it.supportFragmentManager.beginTransaction()
-                .addToBackStack(null)
-                .replace(R.id.main_container, FragmentMoviesDetails.instance(movie))
-                .commit()
-        }
-
-
+        openMovieDetails(movie)
     }
-
-
 
     private val clickListener = object : MoviesAdapter.OnRecyclerItemClicked {
         override fun onClick(movie: Movie) = doOnClick(movie)
@@ -115,7 +111,7 @@ class FragmentMoviesList : Fragment() {
 
     companion object {
 
-        fun instance(step: String) = FragmentMoviesList()
+        fun instance() = MoviesListFragment()
 
         const val VERTICAL_SPAN_COUNT = 2
         const val HORIZONTAL_SPAN_COUNT = 4

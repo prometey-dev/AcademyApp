@@ -11,15 +11,15 @@ fun FragmentActivity.setAsRoot(fragment: Fragment) = ignoreIllegalStateException
         .commit()
 }
 
-fun FragmentActivity.show(fragment: Fragment) = ignoreIllegalStateException {
-    supportFragmentManager.beginTransaction()
+fun Fragment.show(fragment: Fragment) = ignoreIllegalStateException {
+    parentFragmentManager.beginTransaction()
         .replace(R.id.main_container, fragment)
         .addToBackStack(null)
         .commit()
 }
 
-fun FragmentActivity.popBack() = ignoreIllegalStateException {
-    supportFragmentManager.popBackStack()
+fun Fragment.popBack() = ignoreIllegalStateException {
+    parentFragmentManager.popBackStack()
 }
 
 private fun ignoreIllegalStateException(action: () -> Unit) {

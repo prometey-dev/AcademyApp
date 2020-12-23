@@ -1,7 +1,6 @@
 package ru.prometeydev.movie.common
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.google.android.material.snackbar.Snackbar
 
 fun Fragment.toast(message: String) {

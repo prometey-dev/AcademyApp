@@ -3,6 +3,7 @@ package ru.prometeydev.movie
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import ru.prometeydev.movie.common.setAsRoot
+import ru.prometeydev.movie.ui.movieslist.MoviesListFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            setAsRoot(FragmentMoviesList.instance())
+            setAsRoot(MoviesListFragment.instance())
         }
     }
 
