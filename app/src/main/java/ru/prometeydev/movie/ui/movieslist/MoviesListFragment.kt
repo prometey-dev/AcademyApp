@@ -6,17 +6,13 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.data.adapters.MoviesAdapter
 import ru.prometeydev.movie.data.Movie
 
-class MoviesListFragment : MoviesListNavigable<MoviesListViewModel>() {
-
-    private val viewModel: MoviesListViewModel by viewModels { ViewModelProviderFactory() }
+class MoviesListFragment : MoviesListNavigable() {
 
     private var moviesAdapter: MoviesAdapter? = null
 

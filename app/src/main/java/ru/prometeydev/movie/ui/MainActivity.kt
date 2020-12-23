@@ -1,7 +1,8 @@
-package ru.prometeydev.movie
+package ru.prometeydev.movie.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.setAsRoot
 import ru.prometeydev.movie.ui.movieslist.MoviesListFragment
 

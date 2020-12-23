@@ -8,21 +8,16 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.google.android.material.snackbar.Snackbar
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.data.adapters.ActorsAdapter
 import ru.prometeydev.movie.data.Movie
 import ru.prometeydev.movie.data.adapters.calculateStarsCount
 
-class MoviesDetailsFragment : MoviesDetailsNavigable<MoviesDetailsViewModel>() {
-
-    private val viewModel: MoviesDetailsViewModel by viewModels { ViewModelProviderFactory() }
+class MoviesDetailsFragment : MoviesDetailsNavigable() {
 
     private var recycler: RecyclerView? = null
 
