@@ -23,8 +23,8 @@ class MoviesRepository {
         parseMovies(data, genresMap, actorsMap)
     }
 
-    suspend fun getMovieById(id: Int): Movie = withContext(dispatcher) {
-        loadMovies().first { it.id == id }
+    suspend fun getMovieById(id: Int): Movie? = withContext(dispatcher) {
+        loadMovies().find { it.id == id }
     }
 
     private suspend fun loadGenres(): List<Genre> = withContext(dispatcher) {

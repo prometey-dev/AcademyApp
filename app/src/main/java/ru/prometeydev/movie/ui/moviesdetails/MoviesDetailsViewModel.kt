@@ -17,8 +17,10 @@ class MoviesDetailsViewModel(
     val movieState: LiveData<Movie> get() = _mutableMovieState
 
     fun updateMovie(id: Int) {
-        viewModelScope.launch {
-            _mutableMovieState.value = repository.getMovieById(id)
+        if (_mutableMovieState.value?.id != id) {
+            viewModelScope.launch {
+                _mutableMovieState.value = repository.getMovieById(id)
+            }
         }
     }
 

@@ -17,8 +17,10 @@ class MoviesListViewModel(
     val moviesListState: LiveData<List<Movie>> get() = _mutableMoviesListState
 
     fun updateMovies() {
-        viewModelScope.launch {
-            _mutableMoviesListState.value = repository.loadMovies()
+        if (_mutableMoviesListState.value.isNullOrEmpty()) {
+            viewModelScope.launch {
+                _mutableMoviesListState.value = repository.loadMovies()
+            }
         }
     }
 
