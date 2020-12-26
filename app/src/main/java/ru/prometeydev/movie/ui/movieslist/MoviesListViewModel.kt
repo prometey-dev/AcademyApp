@@ -1,6 +1,5 @@
 package ru.prometeydev.movie.ui.movieslist
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

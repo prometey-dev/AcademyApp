@@ -22,7 +22,7 @@ fun Fragment.popBack() = ignoreIllegalStateException {
     parentFragmentManager.popBackStack()
 }
 
-private fun ignoreIllegalStateException(action: () -> Unit) {
+private inline fun ignoreIllegalStateException(action: () -> Unit) {
     try {
         action.invoke()
     } catch (ignored: IllegalStateException) {

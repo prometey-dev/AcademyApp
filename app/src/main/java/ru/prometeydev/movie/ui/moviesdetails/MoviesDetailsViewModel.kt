@@ -3,16 +3,23 @@ package ru.prometeydev.movie.ui.moviesdetails
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ru.prometeydev.movie.data.Actor
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import ru.prometeydev.movie.data.Movie
+import ru.prometeydev.movie.data.MoviesRepository
 
-class MoviesDetailsViewModel : ViewModel() {
+class MoviesDetailsViewModel(
+    private val repository: MoviesRepository
+) : ViewModel() {
 
-    private val _mutableActorsListEmptyState = MutableLiveData<Boolean>(false)
+    private val _mutableMovieState = MutableLiveData<Movie>()
 
-    val actorsListEmptyState: LiveData<Boolean> get() = _mutableActorsListEmptyState
+    val movieState: LiveData<Movie> get() = _mutableMovieState
 
-    fun checkActorsList(actors: List<Actor>) {
-        _mutableActorsListEmptyState.value = actors.isNullOrEmpty()
+    fun updateMovie(id: Int) {
+        viewModelScope.launch {
+            _mutableMovieState.value = repository.getMovieById(id)
+        }
     }
 
 }

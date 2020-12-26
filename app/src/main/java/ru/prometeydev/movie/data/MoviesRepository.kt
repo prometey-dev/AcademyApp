@@ -1,6 +1,7 @@
 package ru.prometeydev.movie.data
 
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -8,7 +9,9 @@ import ru.prometeydev.movie.domain.JsonActor
 import ru.prometeydev.movie.domain.JsonGenre
 import ru.prometeydev.movie.domain.JsonMovie
 
-class MoviesRepository(private val dispatcher: CoroutineDispatcher) {
+class MoviesRepository {
+
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
     private val jsonFormat = Json { ignoreUnknownKeys = true }
 
@@ -18,6 +21,10 @@ class MoviesRepository(private val dispatcher: CoroutineDispatcher) {
 
         val data = readAssetFileToString("data.json")
         parseMovies(data, genresMap, actorsMap)
+    }
+
+    suspend fun getMovieById(id: Int): Movie = withContext(dispatcher) {
+        loadMovies().first { it.id == id }
     }
 
     private suspend fun loadGenres(): List<Genre> = withContext(dispatcher) {

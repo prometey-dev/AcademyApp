@@ -8,20 +8,26 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import ru.prometeydev.movie.R
+import ru.prometeydev.movie.ViewModelProviderFactory
+import ru.prometeydev.movie.common.popBack
+import ru.prometeydev.movie.common.showMessage
 import ru.prometeydev.movie.data.adapters.ActorsAdapter
 import ru.prometeydev.movie.data.Movie
 import ru.prometeydev.movie.data.adapters.calculateStarsCount
 
-class MoviesDetailsFragment : MoviesDetailsNavigable() {
+class MoviesDetailsFragment : Fragment() {
+
+    private val viewModel: MoviesDetailsViewModel by viewModels { ViewModelProviderFactory() }
 
     private var recycler: RecyclerView? = null
-
-    private var movie: Movie? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,35 +38,31 @@ class MoviesDetailsFragment : MoviesDetailsNavigable() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.movieState.observe(this.viewLifecycleOwner) { movie ->
+            setupViews(view, movie)
+        }
+
         loadData()
-        movie?.let { setupViews(view, it) }
-        viewModel.actorsListEmptyState.observe(this.viewLifecycleOwner, this::showMessageIfNeeded)
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        loadActors()
     }
 
     override fun onDestroyView() {
         recycler?.adapter = null
         recycler = null
-        movie = null
 
         super.onDestroyView()
     }
 
     private fun loadData() {
         arguments?.let {
-            movie = it.getParcelable(MOVIE)
+            val movieId = it.getInt(MOVIE_ID)
+            viewModel.updateMovie(movieId)
         }
     }
 
     private fun setupViews(view: View, movie: Movie) {
         view.findViewById<TextView>(R.id.button_back)
             .setOnClickListener {
-                goBack()
+                popBack()
             }
 
         view.findViewById<ImageView>(R.id.movie_logo)
@@ -91,30 +93,28 @@ class MoviesDetailsFragment : MoviesDetailsNavigable() {
             addItemDecoration(itemDecorator)
         }
 
-        viewModel.checkActorsList(movie.actors)
-    }
-
-    private fun loadActors() {
         (recycler?.adapter as? ActorsAdapter)?.apply {
-            movie?.let { bindActors(it.actors) }
+            bindActors(movie.actors)
         }
+
+        showMessageIfNeeded(movie.actors.isNullOrEmpty())
     }
 
-    private fun showMessageIfNeeded(isNotActors: Boolean) {
-        if (isNotActors) {
+    private fun showMessageIfNeeded(hasNoActors: Boolean) {
+        if (hasNoActors) {
             showMessage(getString(R.string.actors_not_laded_message))
         }
     }
 
     companion object {
 
-        fun instance(movie: Movie) = MoviesDetailsFragment().apply {
+        fun instance(movieId: Int) = MoviesDetailsFragment().apply {
             arguments = Bundle().apply {
-                putParcelable(MOVIE, movie)
+                putInt(MOVIE_ID, movieId)
             }
         }
 
-        const val MOVIE = "MOVIE"
+        const val MOVIE_ID = "MOVIE_ID"
 
     }
 
