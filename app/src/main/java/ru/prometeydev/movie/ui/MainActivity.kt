@@ -1,7 +1,10 @@
-package ru.prometeydev.movie
+package ru.prometeydev.movie.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import ru.prometeydev.movie.R
+import ru.prometeydev.movie.common.setAsRoot
+import ru.prometeydev.movie.ui.movieslist.MoviesListFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -10,9 +13,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.main_container, FragmentMoviesList.instance())
-                .commit()
+            setAsRoot(MoviesListFragment.instance())
         }
     }
 
