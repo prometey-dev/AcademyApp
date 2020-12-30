@@ -20,11 +20,11 @@
             android:foreground="@drawable/mask_movie_logo_detail"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
-            app:srcCompat="@drawable/movie_logo_detail"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/guide"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:srcCompat="@drawable/movie_logo_detail"/>
 
         <TextView
             android:id="@+id/button_back"
@@ -100,13 +100,23 @@
             tools:text="125 reviews"/>
 
         <TextView
+            android:id="@+id/time_movie"
+            style="@style/TimeMovieStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            app:layout_constraintStart_toStartOf="@id/rating"
+            app:layout_constraintTop_toBottomOf="@id/rating"
+            tools:text="137 min"/>
+
+        <TextView
             android:id="@+id/storyline"
             style="@style/StorylineStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/storyline_margin_top"
             android:text="@string/storyline"
-            app:layout_constraintTop_toBottomOf="@id/rating"
+            app:layout_constraintTop_toBottomOf="@id/time_movie"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 

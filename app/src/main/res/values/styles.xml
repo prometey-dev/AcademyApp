@@ -115,7 +115,7 @@
 
     <style name="TimeMovieStyle">
         <item name="android:textColor">@color/label_time_movie</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textSize">@dimen/text_size_normal</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>

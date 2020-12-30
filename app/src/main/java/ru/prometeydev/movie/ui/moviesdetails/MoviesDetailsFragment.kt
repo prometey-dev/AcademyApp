@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,9 +18,9 @@ import ru.prometeydev.movie.R
 import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.common.popBack
 import ru.prometeydev.movie.common.showMessage
-import ru.prometeydev.movie.data.adapters.ActorsAdapter
-import ru.prometeydev.movie.data.Movie
-import ru.prometeydev.movie.data.adapters.calculateStarsCount
+import ru.prometeydev.movie.model.Movie
+import ru.prometeydev.movie.model.MovieDetails
+import ru.prometeydev.movie.ui.movieslist.calculateStarsCount
 
 class MoviesDetailsFragment : Fragment() {
 
@@ -59,7 +58,7 @@ class MoviesDetailsFragment : Fragment() {
         }
     }
 
-    private fun setupViews(view: View, movie: Movie) {
+    private fun setupViews(view: View, movie: MovieDetails) {
         view.findViewById<TextView>(R.id.button_back)
             .setOnClickListener {
                 popBack()
@@ -77,6 +76,8 @@ class MoviesDetailsFragment : Fragment() {
 
         view.findViewById<TextView>(R.id.reviews_count)
             .text = getString(R.string.reviews, movie.numberOfRatings)
+
+        view.findViewById<TextView>(R.id.time_movie).text = getString(R.string.movie_time, movie.runtime)
 
         view.findViewById<TextView>(R.id.description).text = movie.overview
 

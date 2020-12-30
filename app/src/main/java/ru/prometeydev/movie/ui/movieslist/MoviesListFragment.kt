@@ -13,9 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.common.show
-import ru.prometeydev.movie.data.adapters.MoviesAdapter
-import ru.prometeydev.movie.data.Movie
-import ru.prometeydev.movie.data.MoviesRepository
+import ru.prometeydev.movie.model.Movie
 import ru.prometeydev.movie.ui.moviesdetails.MoviesDetailsFragment
 
 class MoviesListFragment : Fragment() {

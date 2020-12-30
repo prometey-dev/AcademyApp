@@ -1,4 +1,4 @@
-package ru.prometeydev.movie.data.adapters
+package ru.prometeydev.movie.ui.moviesdetails
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.data.Actor
+import ru.prometeydev.movie.model.Actor
 
 /**
  * Адаптер для списка актеров
@@ -48,6 +48,7 @@ class ActorsAdapter : RecyclerView.Adapter<ActorsAdapter.ActorsViewHolder>() {
                 crossfade(true)
                 placeholder(R.drawable.ic_image_placeholder)
                 fallback(R.drawable.ic_image_placeholder)
+                error(R.drawable.ic_image_placeholder)
             }
 
             name.text = actor.name

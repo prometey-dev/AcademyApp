@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ru.prometeydev.movie.data.Movie
-import ru.prometeydev.movie.data.MoviesRepository
+import ru.prometeydev.movie.model.Movie
+import ru.prometeydev.movie.model.MoviesRepository
 
 class MoviesListViewModel(
     private val repository: MoviesRepository
