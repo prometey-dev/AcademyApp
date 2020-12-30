@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import ru.prometeydev.movie.model.MovieDetails
 import ru.prometeydev.movie.model.MoviesRepository
 import ru.prometeydev.movie.ui.base.BaseViewModel
+import ru.prometeydev.movie.ui.base.StateLoading
 
 class MoviesDetailsViewModel(
     private val repository: MoviesRepository
@@ -19,8 +20,11 @@ class MoviesDetailsViewModel(
     fun loadMovie(movieId: Int) {
         if (_mutableMovieState.value?.id != movieId) {
             viewModelScope.launch(exceptionHandler()) {
+                mutableStateLoading.value = StateLoading.Loading
+
                 _mutableMovieState.value = repository.getMovieById(movieId)
                 mutableError.value = null
+                mutableStateLoading.value = StateLoading.Success
             }
         }
     }

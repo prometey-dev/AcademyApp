@@ -40,6 +40,7 @@ class MoviesDetailsFragment : BaseFragment() {
             setupViews(view, movie)
         }
         viewModel.error.observe(this.viewLifecycleOwner, this::onError)
+        viewModel.stateLoading.observe(this.viewLifecycleOwner, this::handleLoading)
 
         loadData()
     }

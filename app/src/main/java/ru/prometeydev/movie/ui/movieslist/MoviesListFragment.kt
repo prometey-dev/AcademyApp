@@ -43,6 +43,7 @@ class MoviesListFragment : BaseFragment() {
 
         viewModel.moviesListState.observe(this.viewLifecycleOwner, this::loadData)
         viewModel.error.observe(this.viewLifecycleOwner, this::onError)
+        viewModel.stateLoading.observe(this.viewLifecycleOwner, this::handleLoading)
     }
 
     override fun onStart() {
