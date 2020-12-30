@@ -3,10 +3,15 @@ package ru.prometeydev.movie.model
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import ru.prometeydev.movie.common.errors.ConnectionErrorException
+import ru.prometeydev.movie.common.errors.UnexpectedErrorException
 import ru.prometeydev.movie.model.domain.MovieDetailsDto
 import ru.prometeydev.movie.model.domain.MovieDto
 import ru.prometeydev.movie.model.network.MoviesApi
 import ru.prometeydev.movie.model.network.MoviesApiProvider
+import java.io.IOException
+import java.lang.Exception
 
 class MoviesRepository {
 
@@ -17,20 +22,35 @@ class MoviesRepository {
     private lateinit var baseImageUrl: String
 
     suspend fun loadMovies(): List<Movie> = withContext(dispatcher) {
-        baseImageUrl = getImageUrl()
-        val genresMap = loadGenres()
+        try {
+            baseImageUrl = getImageUrl()
+            val genresMap = loadGenres()
 
-        val data = api.getMoviesPopular()
-        mapMovies(data.results, genresMap)
+            val data = api.getMoviesPopular()
+            mapMovies(data.results, genresMap)
+        } catch (ex: Exception) {
+            throw handleException(ex)
+        }
     }
 
     suspend fun getMovieById(movieId: Int): MovieDetails = withContext(dispatcher) {
-        baseImageUrl = getImageUrl()
-        val genresMap = loadGenres()
-        val actorsMap = loadActorsByMovie(movieId)
+        try {
+            baseImageUrl = getImageUrl()
+            val genresMap = loadGenres()
+            val actorsMap = loadActorsByMovie(movieId)
 
-        val data = api.getMovieDetails(movieId)
-        mapMovieDetails(data, genresMap, actorsMap)
+            val data = api.getMovieDetails(movieId)
+            mapMovieDetails(data, genresMap, actorsMap)
+        } catch (ex: Exception) {
+            throw handleException(ex)
+        }
+    }
+
+    private fun handleException(ex: Exception): Exception {
+        return when (ex) {
+            is IOException, is HttpException -> ConnectionErrorException()
+            else -> UnexpectedErrorException()
+        }
     }
 
     private suspend fun getImageUrl(): String = withContext(dispatcher) {

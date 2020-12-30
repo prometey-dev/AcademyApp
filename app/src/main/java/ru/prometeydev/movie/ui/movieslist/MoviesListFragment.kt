@@ -6,7 +6,6 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,9 +13,10 @@ import ru.prometeydev.movie.R
 import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.common.show
 import ru.prometeydev.movie.model.Movie
+import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.moviesdetails.MoviesDetailsFragment
 
-class MoviesListFragment : Fragment() {
+class MoviesListFragment : BaseFragment() {
 
     private val viewModel: MoviesListViewModel by viewModels { ViewModelProviderFactory() }
 
@@ -42,12 +42,13 @@ class MoviesListFragment : Fragment() {
         setupViews(view)
 
         viewModel.moviesListState.observe(this.viewLifecycleOwner, this::loadData)
+        viewModel.error.observe(this.viewLifecycleOwner, this::onError)
     }
 
     override fun onStart() {
         super.onStart()
 
-        viewModel.updateMovies()
+        viewModel.loadMovies()
     }
 
     override fun onDestroyView() {

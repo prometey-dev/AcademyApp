@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,11 +17,11 @@ import ru.prometeydev.movie.R
 import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.common.popBack
 import ru.prometeydev.movie.common.showMessage
-import ru.prometeydev.movie.model.Movie
 import ru.prometeydev.movie.model.MovieDetails
+import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.movieslist.calculateStarsCount
 
-class MoviesDetailsFragment : Fragment() {
+class MoviesDetailsFragment : BaseFragment() {
 
     private val viewModel: MoviesDetailsViewModel by viewModels { ViewModelProviderFactory() }
 
@@ -40,6 +39,7 @@ class MoviesDetailsFragment : Fragment() {
         viewModel.movieState.observe(this.viewLifecycleOwner) { movie ->
             setupViews(view, movie)
         }
+        viewModel.error.observe(this.viewLifecycleOwner, this::onError)
 
         loadData()
     }
@@ -54,7 +54,7 @@ class MoviesDetailsFragment : Fragment() {
     private fun loadData() {
         arguments?.let {
             val movieId = it.getInt(MOVIE_ID)
-            viewModel.updateMovie(movieId)
+            viewModel.loadMovie(movieId)
         }
     }
 
