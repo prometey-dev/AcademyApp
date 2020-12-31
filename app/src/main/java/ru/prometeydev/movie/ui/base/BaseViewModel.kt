@@ -1,21 +1,26 @@
 package ru.prometeydev.movie.ui.base
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineExceptionHandler
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import java.lang.Exception
 
 open class BaseViewModel : ViewModel() {
 
-    protected val mutableError = MutableLiveData<String>()
-    protected val mutableStateLoading = MutableLiveData<StateLoading>(StateLoading.Default)
-
-    val error: LiveData<String> get() = mutableError
-    val stateLoading: LiveData<StateLoading> get() = mutableStateLoading
-
-    fun exceptionHandler() = CoroutineExceptionHandler { _, throwable ->
-        mutableError.value = throwable.message
-        mutableStateLoading.value = StateLoading.Error
+    fun <T> requestWithLiveData(
+        liveData: MutableLiveData<Event<T>>,
+        request: suspend () -> T
+    ) {
+        viewModelScope.launch {
+            try {
+                liveData.postValue(Event.loading())
+                val response = request.invoke()
+                liveData.postValue(Event.success(response))
+            } catch (ex: Exception) {
+                liveData.postValue(Event.error(ex.message))
+            }
+        }
     }
 
 }

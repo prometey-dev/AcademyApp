@@ -2,29 +2,23 @@ package ru.prometeydev.movie.ui.movieslist
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import ru.prometeydev.movie.model.Movie
 import ru.prometeydev.movie.model.MoviesRepository
 import ru.prometeydev.movie.ui.base.BaseViewModel
-import ru.prometeydev.movie.ui.base.StateLoading
+import ru.prometeydev.movie.ui.base.Event
 
 class MoviesListViewModel(
     private val repository: MoviesRepository
 ): BaseViewModel() {
 
-    private val _mutableMoviesListState = MutableLiveData<List<Movie>>(emptyList())
+    private val _mutableLiveData = MutableLiveData<Event<List<Movie>>>()
 
-    val moviesListState: LiveData<List<Movie>> get() = _mutableMoviesListState
+    val liveData: LiveData<Event<List<Movie>>> get() = _mutableLiveData
 
     fun loadMovies() {
-        if (_mutableMoviesListState.value.isNullOrEmpty()) {
-            viewModelScope.launch(exceptionHandler()) {
-                mutableStateLoading.value = StateLoading.Loading
-
-                _mutableMoviesListState.value = repository.loadMovies()
-                mutableError.value = null
-                mutableStateLoading.value = StateLoading.Success
+        if (_mutableLiveData.value?.data.isNullOrEmpty()) {
+            requestWithLiveData(_mutableLiveData) {
+                repository.loadMovies()
             }
         }
     }

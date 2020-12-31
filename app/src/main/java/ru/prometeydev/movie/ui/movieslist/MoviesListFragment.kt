@@ -3,9 +3,7 @@ package ru.prometeydev.movie.ui.movieslist
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,42 +19,41 @@ class MoviesListFragment : BaseFragment() {
     private val viewModel: MoviesListViewModel by viewModels { ViewModelProviderFactory() }
 
     private var moviesAdapter: MoviesAdapter? = null
-
     private var recycler: RecyclerView? = null
-
     private var spanCount = VERTICAL_SPAN_COUNT
-
     private var savedRecyclerLayoutState: Parcelable? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_movies_list, container, false)
+    override fun layoutId() = R.layout.fragment_movies_list
+
+    override fun initViews(view: View) {
+        spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+            VERTICAL_SPAN_COUNT else HORIZONTAL_SPAN_COUNT
+
+        moviesAdapter = MoviesAdapter(clickListener)
+        recycler = view.findViewById(R.id.movie_list)
+        recycler?.apply {
+            layoutManager = GridLayoutManager(context, spanCount)
+            adapter = moviesAdapter
+        }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        setupViews(view)
-
-        viewModel.moviesListState.observe(this.viewLifecycleOwner, this::loadData)
-        viewModel.error.observe(this.viewLifecycleOwner, this::onError)
-        viewModel.stateLoading.observe(this.viewLifecycleOwner, this::handleLoading)
+    override fun destroyViews() {
+        recycler?.adapter = null
+        recycler = null
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun startObserve() {
+        viewModel.liveData.observe(this.viewLifecycleOwner, this::setStateEvent)
+    }
 
+    override fun loadData() {
         viewModel.loadMovies()
     }
 
-    override fun onDestroyView() {
-        recycler?.adapter = null
-        recycler = null
-
-        super.onDestroyView()
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> bindViews(data: T) {
+        val movies = data as List<Movie>
+        moviesAdapter?.bindMovies(movies)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -83,22 +80,6 @@ class MoviesListFragment : BaseFragment() {
                 savedRecyclerLayoutState = it.getParcelable(BUNDLE_RECYCLER_LAYOUT)
             }
         }
-    }
-
-    private fun setupViews(view: View) {
-        spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-            VERTICAL_SPAN_COUNT else HORIZONTAL_SPAN_COUNT
-
-        moviesAdapter = MoviesAdapter(clickListener)
-        recycler = view.findViewById(R.id.movie_list)
-        recycler?.apply {
-            layoutManager = GridLayoutManager(context, spanCount)
-            adapter = moviesAdapter
-        }
-    }
-
-    private fun loadData(movies: List<Movie>) {
-        moviesAdapter?.bindMovies(movies)
     }
 
     private fun doOnClick(movie: Movie) {
