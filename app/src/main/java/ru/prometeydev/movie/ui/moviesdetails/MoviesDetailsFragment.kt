@@ -6,13 +6,12 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.common.popBack
 import ru.prometeydev.movie.common.showMessage
 import ru.prometeydev.movie.model.MovieDetails
@@ -21,7 +20,7 @@ import ru.prometeydev.movie.ui.movieslist.calculateStarsCount
 
 class MoviesDetailsFragment : BaseFragment() {
 
-    private val viewModel: MoviesDetailsViewModel by viewModels { ViewModelProviderFactory() }
+    private val viewModel: MoviesDetailsViewModel by viewModel()
 
     private var recycler: RecyclerView? = null
     private var buttonBack: TextView? = null

@@ -4,11 +4,10 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.common.show
 import ru.prometeydev.movie.model.Movie
 import ru.prometeydev.movie.ui.base.BaseFragment
@@ -16,7 +15,7 @@ import ru.prometeydev.movie.ui.moviesdetails.MoviesDetailsFragment
 
 class MoviesListFragment : BaseFragment() {
 
-    private val viewModel: MoviesListViewModel by viewModels { ViewModelProviderFactory() }
+    private val viewModel: MoviesListViewModel by viewModel()
 
     private var moviesAdapter: MoviesAdapter? = null
     private var recycler: RecyclerView? = null

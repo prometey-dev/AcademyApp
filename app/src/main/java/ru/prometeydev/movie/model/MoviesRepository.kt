@@ -13,11 +13,11 @@ import ru.prometeydev.movie.model.network.MoviesApiProvider
 import java.io.IOException
 import java.lang.Exception
 
-class MoviesRepository {
+class MoviesRepository(network: MoviesApiProvider) {
 
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    private val api: MoviesApi = MoviesApiProvider().api
+    private val api: MoviesApi = network.api
 
     private lateinit var baseImageUrl: String
 
