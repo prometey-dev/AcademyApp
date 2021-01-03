@@ -1,8 +1,5 @@
 package ru.prometeydev.movie.model
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ru.prometeydev.movie.model.domain.MovieDetailsDto
 import ru.prometeydev.movie.model.domain.MovieDto
 import ru.prometeydev.movie.model.local.Actor
@@ -14,34 +11,32 @@ import ru.prometeydev.movie.model.network.MoviesApiProvider
 
 class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
 
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-
     private val api: MoviesApi = network.api
 
     private lateinit var baseImageUrl: String
 
     suspend fun loadMovies(): List<Movie> = execute {
         baseImageUrl = getImageUrl()
-        val genresMap = loadGenres()
 
+        val genresMap = loadGenres()
         val data = api.getMoviesPopular()
         mapMovies(data.results, genresMap)
     }
 
     suspend fun getMovieById(movieId: Int): MovieDetails = execute {
         baseImageUrl = getImageUrl()
+
         val genresMap = loadGenres()
         val actorsMap = loadActorsByMovie(movieId)
-
         val data = api.getMovieDetails(movieId)
         mapMovieDetails(data, genresMap, actorsMap)
     }
 
-    private suspend fun getImageUrl(): String = withContext(dispatcher) {
+    private suspend fun getImageUrl(): String = execute {
         api.getConfiguration().images.secureBaseUrl
     }
 
-    private suspend fun loadGenres(): List<Genre> = withContext(dispatcher) {
+    private suspend fun loadGenres(): List<Genre> = execute {
         val data = api.getGenresList()
         data.genres.map {
             Genre(
@@ -51,7 +46,7 @@ class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
         }
     }
 
-    private suspend fun loadActorsByMovie(movieId: Int): List<Actor> = withContext(dispatcher) {
+    private suspend fun loadActorsByMovie(movieId: Int): List<Actor> = execute {
         val data = api.getCredits(movieId)
         data.actors.map {
             Actor(
