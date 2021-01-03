@@ -3,17 +3,16 @@ package ru.prometeydev.movie.model
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
-import ru.prometeydev.movie.common.errors.ConnectionErrorException
-import ru.prometeydev.movie.common.errors.UnexpectedErrorException
 import ru.prometeydev.movie.model.domain.MovieDetailsDto
 import ru.prometeydev.movie.model.domain.MovieDto
+import ru.prometeydev.movie.model.local.Actor
+import ru.prometeydev.movie.model.local.Genre
+import ru.prometeydev.movie.model.local.Movie
+import ru.prometeydev.movie.model.local.MovieDetails
 import ru.prometeydev.movie.model.network.MoviesApi
 import ru.prometeydev.movie.model.network.MoviesApiProvider
-import java.io.IOException
-import java.lang.Exception
 
-class MoviesRepository(network: MoviesApiProvider) {
+class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
 
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
@@ -21,36 +20,21 @@ class MoviesRepository(network: MoviesApiProvider) {
 
     private lateinit var baseImageUrl: String
 
-    suspend fun loadMovies(): List<Movie> = withContext(dispatcher) {
-        try {
-            baseImageUrl = getImageUrl()
-            val genresMap = loadGenres()
+    suspend fun loadMovies(): List<Movie> = execute {
+        baseImageUrl = getImageUrl()
+        val genresMap = loadGenres()
 
-            val data = api.getMoviesPopular()
-            mapMovies(data.results, genresMap)
-        } catch (ex: Exception) {
-            throw handleException(ex)
-        }
+        val data = api.getMoviesPopular()
+        mapMovies(data.results, genresMap)
     }
 
-    suspend fun getMovieById(movieId: Int): MovieDetails = withContext(dispatcher) {
-        try {
-            baseImageUrl = getImageUrl()
-            val genresMap = loadGenres()
-            val actorsMap = loadActorsByMovie(movieId)
+    suspend fun getMovieById(movieId: Int): MovieDetails = execute {
+        baseImageUrl = getImageUrl()
+        val genresMap = loadGenres()
+        val actorsMap = loadActorsByMovie(movieId)
 
-            val data = api.getMovieDetails(movieId)
-            mapMovieDetails(data, genresMap, actorsMap)
-        } catch (ex: Exception) {
-            throw handleException(ex)
-        }
-    }
-
-    private fun handleException(ex: Exception): Exception {
-        return when (ex) {
-            is IOException, is HttpException -> ConnectionErrorException()
-            else -> UnexpectedErrorException()
-        }
+        val data = api.getMovieDetails(movieId)
+        mapMovieDetails(data, genresMap, actorsMap)
     }
 
     private suspend fun getImageUrl(): String = withContext(dispatcher) {

@@ -14,7 +14,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.popBack
 import ru.prometeydev.movie.common.showMessage
-import ru.prometeydev.movie.model.MovieDetails
+import ru.prometeydev.movie.model.local.MovieDetails
 import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.movieslist.calculateStarsCount
 

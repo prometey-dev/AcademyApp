@@ -8,9 +8,8 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import kotlinx.coroutines.*
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.model.Movie
+import ru.prometeydev.movie.model.local.Movie
 
 /**
  * Адаптер для списка фильмов

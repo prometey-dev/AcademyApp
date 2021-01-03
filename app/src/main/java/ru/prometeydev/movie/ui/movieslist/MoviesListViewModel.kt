@@ -2,7 +2,7 @@ package ru.prometeydev.movie.ui.movieslist
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.prometeydev.movie.model.Movie
+import ru.prometeydev.movie.model.local.Movie
 import ru.prometeydev.movie.model.MoviesRepository
 import ru.prometeydev.movie.ui.base.BaseViewModel
 import ru.prometeydev.movie.ui.base.Event
