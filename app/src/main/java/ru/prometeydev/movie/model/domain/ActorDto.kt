@@ -5,7 +5,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class ActorDto(
-    @Json(name = "id") val id: Int,
-    @Json(name = "name") val name: String,
-    @Json(name = "profile_path") val profilePicture: String?
+    val id: Int,
+    val name: String,
+    @Json(name = "profile_path")
+    val profilePicture: String?
 )

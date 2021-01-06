@@ -8,6 +8,7 @@ import retrofit2.HttpException
 import ru.prometeydev.movie.common.errors.ConnectionErrorException
 import ru.prometeydev.movie.common.errors.UnexpectedErrorException
 import ru.prometeydev.movie.model.domain.ErrorResponse
+import java.io.IOException
 import java.lang.Exception
 import java.net.ConnectException
 import java.net.ProtocolException
@@ -18,7 +19,7 @@ abstract class BaseUseCases {
 
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    private val moshi = Moshi.Builder().build()
+    private val moshi: Moshi = Moshi.Builder().build()
 
     protected suspend fun <T> execute(request: suspend () -> T) = withContext(dispatcher) {
         try {
@@ -30,13 +31,8 @@ abstract class BaseUseCases {
 
     private fun handleException(error: Throwable): Throwable {
         return when (error) {
-            is ConnectException,
-            is SocketTimeoutException,
-            is SocketException,
-            is ProtocolException -> ConnectionErrorException()
-
+            is IOException -> ConnectionErrorException()
             is HttpException -> handleHttpException(error)
-
             else -> UnexpectedErrorException()
         }
     }
@@ -46,7 +42,7 @@ abstract class BaseUseCases {
         val errorMessage = httpException.response()?.errorBody()?.string()
         val jsonAdapter = moshi.adapter(ErrorResponse::class.java)
         val errorResponse = jsonAdapter.fromJson(errorMessage)
-        return Exception(errorResponse?.message)
+        return Throwable(errorResponse?.message)
     }
 
 }

@@ -14,20 +14,18 @@ class MoviesApiProvider {
 
     lateinit var api: MoviesApi
 
-    private val okHttpClient: OkHttpClient
-
-    init {
-        val tokenInterceptor = TokenInterceptor()
-        val loggingInterceptor = HttpLoggingInterceptor()
+    private val tokenInterceptor = TokenInterceptor()
+    private val loggingInterceptor = HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY)
 
-        okHttpClient = OkHttpClient.Builder()
+    private val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
             .addInterceptor(tokenInterceptor)
             .build()
 
+    init {
         setupApi()
     }
 
