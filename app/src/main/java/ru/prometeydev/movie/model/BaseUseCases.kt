@@ -41,6 +41,7 @@ abstract class BaseUseCases {
         }
     }
 
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     private fun handleHttpException(httpException: HttpException): Throwable {
         val errorMessage = httpException.response()?.errorBody()?.string()
         val jsonAdapter = moshi.adapter(ErrorResponse::class.java)

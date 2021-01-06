@@ -5,22 +5,21 @@ import androidx.lifecycle.MutableLiveData
 import ru.prometeydev.movie.model.local.MovieDetails
 import ru.prometeydev.movie.model.MoviesRepository
 import ru.prometeydev.movie.ui.base.BaseViewModel
-import ru.prometeydev.movie.ui.base.Event
+import ru.prometeydev.movie.ui.base.Result
 
 class MoviesDetailsViewModel(
     private val repository: MoviesRepository
 ) : BaseViewModel() {
 
-    private val _mutableLiveData = MutableLiveData<Event<MovieDetails>>()
+    private val _mutableLiveData = MutableLiveData<Result>()
 
-    val liveData: LiveData<Event<MovieDetails>> get() = _mutableLiveData
+    val liveData: LiveData<Result> get() = _mutableLiveData
 
+    @Suppress("UNCHECKED_CAST")
     fun loadMovie(movieId: Int) {
-        if (_mutableLiveData.value?.data?.id != movieId) {
             requestWithLiveData(_mutableLiveData) {
                 repository.getMovieById(movieId)
             }
-        }
     }
 
 }

@@ -15,11 +15,11 @@ class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
 
     private lateinit var baseImageUrl: String
 
-    suspend fun loadMovies(): List<Movie> = execute {
+    suspend fun loadMovies(page: Int): List<Movie> = execute {
         baseImageUrl = getImageUrl()
 
         val genresMap = loadGenres()
-        val data = api.getMoviesPopular()
+        val data = api.getMoviesPopular(page)
         mapMovies(data.results, genresMap)
     }
 

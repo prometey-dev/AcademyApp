@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import ru.prometeydev.movie.R
@@ -16,9 +18,7 @@ import ru.prometeydev.movie.model.local.Movie
  */
 class MoviesAdapter(
     private val clickListener: OnRecyclerItemClicked
-) : RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder>() {
-
-    private var movies = listOf<Movie>()
+) : PagingDataAdapter<Movie, MoviesAdapter.MoviesViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesViewHolder {
         return MoviesViewHolder(
@@ -28,14 +28,7 @@ class MoviesAdapter(
     }
 
     override fun onBindViewHolder(holder: MoviesViewHolder, position: Int) {
-        holder.onBind(movies[position], clickListener)
-    }
-
-    override fun getItemCount(): Int = movies.size
-
-    fun bindMovies(movies: List<Movie>) {
-        this.movies = movies
-        notifyDataSetChanged()
+        getItem(position)?.let { holder.onBind(it, clickListener) }
     }
 
     /**
@@ -77,6 +70,18 @@ class MoviesAdapter(
             }
         }
 
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Movie>() {
+            override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 
 }

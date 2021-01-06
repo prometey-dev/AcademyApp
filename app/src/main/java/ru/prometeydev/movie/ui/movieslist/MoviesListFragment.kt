@@ -4,14 +4,26 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.widget.Button
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.show
+import ru.prometeydev.movie.common.showMessage
 import ru.prometeydev.movie.model.local.Movie
 import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.moviesdetails.MoviesDetailsFragment
+
 
 class MoviesListFragment : BaseFragment() {
 
@@ -19,8 +31,11 @@ class MoviesListFragment : BaseFragment() {
 
     private var moviesAdapter: MoviesAdapter? = null
     private var recycler: RecyclerView? = null
+    private var retryButton: Button? = null
     private var spanCount = VERTICAL_SPAN_COUNT
     private var savedRecyclerLayoutState: Parcelable? = null
+
+    private var searchJob: Job? = null
 
     override fun layoutId() = R.layout.fragment_movies_list
 
@@ -30,19 +45,35 @@ class MoviesListFragment : BaseFragment() {
 
         moviesAdapter = MoviesAdapter(clickListener)
         recycler = view.findViewById(R.id.movie_list)
+
+        moviesAdapter?.addLoadStateListener { loadState ->
+            addLoadState(loadState)
+        }
+
         recycler?.apply {
             layoutManager = GridLayoutManager(context, spanCount)
-            adapter = moviesAdapter
+            adapter = moviesAdapter?.withLoadStateFooter(
+                    footer = MoviesLoadStateAdapter { moviesAdapter?.retry() }
+            )
         }
+
+        retryButton = view.findViewById(R.id.retry_button)
+        retryButton?.setOnClickListener { moviesAdapter?.retry() }
     }
 
     override fun destroyViews() {
         recycler?.adapter = null
         recycler = null
+        retryButton = null
     }
 
     override fun startObserve() {
-        viewModel.liveData.observe(this.viewLifecycleOwner, this::setStateEvent)
+        searchJob?.cancel()
+        searchJob = lifecycleScope.launch {
+            viewModel.state.collectLatest {
+                this@MoviesListFragment.setStateEvent(it)
+            }
+        }
     }
 
     override fun loadData() {
@@ -51,8 +82,10 @@ class MoviesListFragment : BaseFragment() {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> bindViews(data: T) {
-        val movies = data as List<Movie>
-        moviesAdapter?.bindMovies(movies)
+        lifecycleScope.launch {
+            val movies = data as PagingData<Movie>
+            moviesAdapter?.submitData(movies)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -79,6 +112,18 @@ class MoviesListFragment : BaseFragment() {
                 savedRecyclerLayoutState = it.getParcelable(BUNDLE_RECYCLER_LAYOUT)
             }
         }
+    }
+
+    private fun addLoadState(loadState: CombinedLoadStates) {
+        loader?.isVisible = loadState.source.refresh is LoadState.Loading
+        retryButton?.isVisible = loadState.source.refresh is LoadState.Error
+
+        val errorState = loadState.source.append as? LoadState.Error
+                ?:loadState.source.prepend as? LoadState.Error
+                ?: loadState.append as? LoadState.Error
+                ?: loadState.prepend as? LoadState.Error
+
+        errorState?.let { showMessage(it.error.message ?: "") }
     }
 
     private fun doOnClick(movie: Movie) {

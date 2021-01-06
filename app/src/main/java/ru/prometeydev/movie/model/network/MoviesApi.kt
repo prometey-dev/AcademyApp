@@ -8,7 +8,7 @@ import ru.prometeydev.movie.model.domain.*
 interface MoviesApi {
 
     @GET("movie/popular")
-    suspend fun getMoviesPopular(): PopularMoviesDto
+    suspend fun getMoviesPopular(@Query("page") page: Int): PopularMoviesDto
 
     @GET("movie/{movie_id}")
     suspend fun getMovieDetails(@Path("movie_id") movieId: Int): MovieDetailsDto

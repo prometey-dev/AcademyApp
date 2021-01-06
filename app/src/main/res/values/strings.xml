@@ -23,4 +23,5 @@
 
     <string name="actors_not_laded_message">Actors list not loaded</string>
 
+    <string name="retry">Retry</string>
 </resources>

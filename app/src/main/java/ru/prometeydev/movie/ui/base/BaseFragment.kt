@@ -11,7 +11,7 @@ import ru.prometeydev.movie.common.showMessage
 
 abstract class BaseFragment : Fragment() {
 
-    private var loader: View? = null
+    protected var loader: View? = null
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -39,18 +39,18 @@ abstract class BaseFragment : Fragment() {
         destroyViews()
     }
 
-    protected fun <T> setStateEvent(event: Event<T>) {
-        when (event.status) {
-            Event.Status.LOADING -> {
+    protected fun setStateEvent(result: Result) {
+        when (result) {
+            is Result.Loading -> {
                 loader?.isVisible = true
             }
-            Event.Status.ERROR -> {
+            is Result.Error -> {
                 loader?.isVisible = false
-                showMessage(event.error ?: "")
+                showMessage(result.message ?: "")
             }
-            Event.Status.SUCCESS -> {
+            is Result.Success<*> -> {
                 loader?.isVisible = false
-                bindViews(event.data)
+                bindViews(result.data)
             }
         }
     }
