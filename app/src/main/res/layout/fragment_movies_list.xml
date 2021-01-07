@@ -28,6 +28,7 @@
         android:layout_marginTop="@dimen/movie_list_margin_top"
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"
+        android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/movies_list_header"
         app:layout_constraintStart_toStartOf="parent"

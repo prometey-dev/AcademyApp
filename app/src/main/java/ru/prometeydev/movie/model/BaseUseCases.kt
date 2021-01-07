@@ -10,10 +10,7 @@ import ru.prometeydev.movie.common.errors.UnexpectedErrorException
 import ru.prometeydev.movie.model.domain.ErrorResponse
 import java.io.IOException
 import java.lang.Exception
-import java.net.ConnectException
-import java.net.ProtocolException
-import java.net.SocketException
-import java.net.SocketTimeoutException
+import java.net.*
 
 abstract class BaseUseCases {
 
