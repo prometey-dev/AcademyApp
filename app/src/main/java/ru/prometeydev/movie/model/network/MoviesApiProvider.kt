@@ -8,6 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import ru.prometeydev.movie.BuildConfig
+import ru.prometeydev.movie.model.network.MoviesApiProvider.Companion.API_KEY
 import java.util.concurrent.TimeUnit
 
 class MoviesApiProvider {
@@ -44,7 +45,7 @@ class MoviesApiProvider {
         override fun intercept(chain: Interceptor.Chain): Response {
             val originalRequest = chain.request()
             val urlWithToken = originalRequest.url.newBuilder()
-                .addQueryParameter("api_key", API_KEY)
+                .addQueryParameter("api_key", BuildConfig.API_KEY)
                 .build()
 
             val request = originalRequest.newBuilder()
