@@ -85,7 +85,7 @@ class MoviesDetailsFragment : BaseFragment() {
         }
     }
 
-    override fun <T> bindViews(data: T) {
+    override fun bindViews(data: Any) {
         val movie = data as MovieDetails
 
         buttonBack?.setOnClickListener {

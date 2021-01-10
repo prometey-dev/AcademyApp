@@ -81,7 +81,7 @@ class MoviesListFragment : BaseFragment() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T> bindViews(data: T) {
+    override fun bindViews(data: Any) {
         lifecycleScope.launch {
             val movies = data as PagingData<Movie>
             moviesAdapter?.submitData(movies)

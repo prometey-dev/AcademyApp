@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import ru.prometeydev.movie.common.errors.ConnectionErrorException
+import ru.prometeydev.movie.common.errors.ErrorResponseException
 import ru.prometeydev.movie.common.errors.UnexpectedErrorException
 import ru.prometeydev.movie.model.domain.ErrorResponse
 import java.io.IOException
@@ -39,7 +40,7 @@ abstract class BaseUseCases {
         val errorMessage = httpException.response()?.errorBody()?.string()
         val jsonAdapter = moshi.adapter(ErrorResponse::class.java)
         val errorResponse = jsonAdapter.fromJson(errorMessage)
-        return Throwable(errorResponse?.message)
+        return errorResponse?.let { ErrorResponseException(it) } ?: UnexpectedErrorException()
     }
 
 }

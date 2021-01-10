@@ -13,11 +13,11 @@ class MoviesPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         val page = params.key ?: STARTING_PAGE_INDEX
         return try {
-            val movies = repository.loadMovies(page)
+            val response = repository.loadMovies(page)
             LoadResult.Page(
-                data = movies,
+                data = repository.mapMovies(response.results),
                 prevKey = if (page == STARTING_PAGE_INDEX) null else page - 1,
-                nextKey = if (movies.isEmpty()) null else page + 1
+                nextKey = if (page == response.pagesCount - 1) null else page + 1
             )
         } catch (ex: Throwable) {
             LoadResult.Error(ex)

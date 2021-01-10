@@ -5,24 +5,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-open class BaseViewModel : ViewModel() {
+open class BaseViewModel<R> : ViewModel() {
 
+    protected val mutableLiveData: MutableLiveData<R> = MutableLiveData()
+
+    @Suppress("UNCHECKED_CAST")
     protected fun <T> requestWithLiveData(
-        liveData: MutableLiveData<Result>,
         request: suspend () -> T
     ) {
         viewModelScope.launch {
             try {
-                liveData.postValue(Result.Loading)
+                mutableLiveData.postValue(Result.Loading as R)
                 val response = request.invoke()
-                liveData.postValue(Result.Success(response))
+                mutableLiveData.postValue(Result.Success(response) as R)
             } catch (ex: Throwable) {
-                liveData.postValue(Result.Error(ex.message))
+                mutableLiveData.postValue(Result.Error(ex.message ?: "") as R)
             }
         }
     }
@@ -39,7 +40,7 @@ open class BaseViewModel : ViewModel() {
                     stateFlow.value = Result.Success(it)
                 }
             } catch (e: Exception) {
-                stateFlow.value = Result.Error(e.message)
+                stateFlow.value = Result.Error(e.message ?: "")
             }
         }
     }

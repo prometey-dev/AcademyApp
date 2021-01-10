@@ -13,7 +13,7 @@ import ru.prometeydev.movie.ui.base.Result
 
 class MoviesListViewModel(
     private val repository: MoviesRepository
-): BaseViewModel() {
+): BaseViewModel<Result>() {
 
     private var currentMoviesResult: Flow<PagingData<Movie>>? = null
 

@@ -46,11 +46,11 @@ abstract class BaseFragment : Fragment() {
             }
             is Result.Error -> {
                 loader?.isVisible = false
-                showMessage(result.message ?: "")
+                showMessage(result.message)
             }
             is Result.Success<*> -> {
                 loader?.isVisible = false
-                bindViews(result.data)
+                result.data?.let { bindViews(it) }
             }
         }
     }
@@ -60,6 +60,6 @@ abstract class BaseFragment : Fragment() {
     abstract fun startObserve()
     abstract fun destroyViews()
     abstract fun loadData()
-    abstract fun <T> bindViews(data: T)
+    abstract fun bindViews(data: Any)
 
 }

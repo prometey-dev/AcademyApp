@@ -2,6 +2,7 @@ package ru.prometeydev.movie.model
 
 import ru.prometeydev.movie.model.domain.MovieDetailsDto
 import ru.prometeydev.movie.model.domain.MovieDto
+import ru.prometeydev.movie.model.domain.PopularMoviesDto
 import ru.prometeydev.movie.model.local.Actor
 import ru.prometeydev.movie.model.local.Genre
 import ru.prometeydev.movie.model.local.Movie
@@ -15,21 +16,24 @@ class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
 
     private lateinit var baseImageUrl: String
 
-    suspend fun loadMovies(page: Int): List<Movie> = execute {
+    private var genres: List<Genre> = emptyList()
+
+    suspend fun loadMovies(page: Int): PopularMoviesDto = execute {
         baseImageUrl = getImageUrl()
 
-        val genresMap = loadGenres()
-        val data = api.getMoviesPopular(page)
-        mapMovies(data.results, genresMap)
+        if (genres.isEmpty()) {
+            genres = loadGenres()
+        }
+        api.getMoviesPopular(page)
+        //mapMovies(data.results)
     }
 
     suspend fun getMovieById(movieId: Int): MovieDetails = execute {
         baseImageUrl = getImageUrl()
 
-        val genresMap = loadGenres()
         val actorsMap = loadActorsByMovie(movieId)
         val data = api.getMovieDetails(movieId)
-        mapMovieDetails(data, genresMap, actorsMap)
+        mapMovieDetails(data, actorsMap)
     }
 
     private suspend fun getImageUrl(): String = execute {
@@ -63,9 +67,8 @@ class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
         } ?: ""
     }
 
-    private fun mapMovies(
-        movies: List<MovieDto>,
-        genres: List<Genre>
+    fun mapMovies(
+        movies: List<MovieDto>
     ): List<Movie> {
         val genresMap = genres.associateBy { it.id }
 
@@ -89,7 +92,6 @@ class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
 
     private fun mapMovieDetails(
         movie: MovieDetailsDto,
-        genres: List<Genre>,
         actors: List<Actor>
     ): MovieDetails {
         return MovieDetails(
@@ -103,7 +105,7 @@ class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
             ratings = movie.ratings,
             adult = movie.adult,
             runtime = movie.runtime,
-            genres = genres,
+            genres = movie.genres.map { Genre(it.id, it.name) },
             actors = actors
         )
     }
