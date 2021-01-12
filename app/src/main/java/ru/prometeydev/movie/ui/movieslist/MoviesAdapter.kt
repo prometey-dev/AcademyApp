@@ -1,28 +1,24 @@
-package ru.prometeydev.movie.data.adapters
+package ru.prometeydev.movie.ui.movieslist
 
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
 import coil.load
-import coil.request.ImageRequest
-import kotlinx.coroutines.*
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.data.Movie
+import ru.prometeydev.movie.model.local.Movie
 
 /**
  * Адаптер для списка фильмов
  */
 class MoviesAdapter(
     private val clickListener: OnRecyclerItemClicked
-) : RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder>() {
-
-    private var movies = listOf<Movie>()
+) : PagingDataAdapter<Movie, MoviesAdapter.MoviesViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesViewHolder {
         return MoviesViewHolder(
@@ -32,14 +28,7 @@ class MoviesAdapter(
     }
 
     override fun onBindViewHolder(holder: MoviesViewHolder, position: Int) {
-        holder.onBind(movies[position], clickListener)
-    }
-
-    override fun getItemCount(): Int = movies.size
-
-    fun bindMovies(movies: List<Movie>) {
-        this.movies = movies
-        notifyDataSetChanged()
+        getItem(position)?.let { holder.onBind(it, clickListener) }
     }
 
     /**
@@ -54,11 +43,8 @@ class MoviesAdapter(
      */
     class MoviesViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        private var scope = CoroutineScope(Dispatchers.Default + Job())
-
         private val name = itemView.findViewById<TextView>(R.id.movie_name)
         private val genre = itemView.findViewById<TextView>(R.id.movie_genre)
-        private val duration = itemView.findViewById<TextView>(R.id.time_movie)
         private val rating = itemView.findViewById<RatingBar>(R.id.rating)
         private val reviewsCount = itemView.findViewById<TextView>(R.id.reviews_count)
         private val ageLimit = itemView.findViewById<TextView>(R.id.age_limit)
@@ -68,7 +54,6 @@ class MoviesAdapter(
         fun onBind(movie: Movie, clickListener: OnRecyclerItemClicked) {
             name.text = movie.title
             genre.text = movie.genres.joinToString { it.name }
-            duration.text = context.getString(R.string.movie_time, movie.runtime)
             rating.rating = movie.ratings.calculateStarsCount()
             reviewsCount.text = context.getString(R.string.reviews, movie.numberOfRatings)
             ageLimit.text  = context.getString(R.string.age_limit, movie.minimumAge)
@@ -77,6 +62,7 @@ class MoviesAdapter(
                 crossfade(true)
                 placeholder(R.drawable.ic_image_placeholder)
                 fallback(R.drawable.ic_image_placeholder)
+                error(R.drawable.ic_image_placeholder)
             }
 
             itemView.setOnClickListener {
@@ -84,6 +70,18 @@ class MoviesAdapter(
             }
         }
 
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Movie>() {
+            override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 
 }

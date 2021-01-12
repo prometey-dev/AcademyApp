@@ -1,26 +1,20 @@
 package ru.prometeydev.movie.ui.moviesdetails
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-import ru.prometeydev.movie.data.Movie
-import ru.prometeydev.movie.data.MoviesRepository
+import ru.prometeydev.movie.model.MoviesRepository
+import ru.prometeydev.movie.model.local.MovieDetails
+import ru.prometeydev.movie.ui.base.BaseViewModel
+import ru.prometeydev.movie.ui.base.Result
 
 class MoviesDetailsViewModel(
     private val repository: MoviesRepository
-) : ViewModel() {
+) : BaseViewModel<MovieDetails>() {
 
-    private val _mutableMovieState = MutableLiveData<Movie>()
+    val liveData: LiveData<Result<MovieDetails>> get() = mutableLiveData
 
-    val movieState: LiveData<Movie> get() = _mutableMovieState
-
-    fun updateMovie(id: Int) {
-        if (_mutableMovieState.value?.id != id) {
-            viewModelScope.launch {
-                _mutableMovieState.value = repository.getMovieById(id)
-            }
+    fun loadMovie(movieId: Int) {
+        requestWithLiveData {
+            repository.getMovieById(movieId)
         }
     }
 

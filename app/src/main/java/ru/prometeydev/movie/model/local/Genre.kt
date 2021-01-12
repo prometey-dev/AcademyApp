@@ -1,4 +1,4 @@
-package ru.prometeydev.movie.data
+package ru.prometeydev.movie.model.local
 
 data class Genre(
     val id: Int,

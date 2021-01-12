@@ -3,60 +3,89 @@ package ru.prometeydev.movie.ui.movieslist
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import android.widget.Button
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.ViewModelProviderFactory
 import ru.prometeydev.movie.common.show
-import ru.prometeydev.movie.data.adapters.MoviesAdapter
-import ru.prometeydev.movie.data.Movie
-import ru.prometeydev.movie.data.MoviesRepository
+import ru.prometeydev.movie.common.showMessage
+import ru.prometeydev.movie.model.local.Movie
+import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.moviesdetails.MoviesDetailsFragment
 
-class MoviesListFragment : Fragment() {
 
-    private val viewModel: MoviesListViewModel by viewModels { ViewModelProviderFactory() }
+class MoviesListFragment : BaseFragment() {
+
+    private val viewModel: MoviesListViewModel by viewModel()
 
     private var moviesAdapter: MoviesAdapter? = null
-
     private var recycler: RecyclerView? = null
-
+    private var retryButton: Button? = null
     private var spanCount = VERTICAL_SPAN_COUNT
-
     private var savedRecyclerLayoutState: Parcelable? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_movies_list, container, false)
+    private var searchJob: Job? = null
+
+    override fun layoutId() = R.layout.fragment_movies_list
+
+    override fun initViews(view: View) {
+        spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+            VERTICAL_SPAN_COUNT else HORIZONTAL_SPAN_COUNT
+
+        moviesAdapter = MoviesAdapter(clickListener)
+        recycler = view.findViewById(R.id.movie_list)
+
+        moviesAdapter?.addLoadStateListener { loadState ->
+            addLoadState(loadState)
+        }
+
+        recycler?.apply {
+            layoutManager = GridLayoutManager(context, spanCount)
+            adapter = moviesAdapter?.withLoadStateFooter(
+                    footer = MoviesLoadStateAdapter { moviesAdapter?.retry() }
+            )
+        }
+
+        retryButton = view.findViewById(R.id.retry_button)
+        retryButton?.setOnClickListener { moviesAdapter?.retry() }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        setupViews(view)
-
-        viewModel.moviesListState.observe(this.viewLifecycleOwner, this::loadData)
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        viewModel.updateMovies()
-    }
-
-    override fun onDestroyView() {
+    override fun destroyViews() {
         recycler?.adapter = null
         recycler = null
+        retryButton = null
+    }
 
-        super.onDestroyView()
+    override fun startObserve() {
+        searchJob?.cancel()
+        searchJob = lifecycleScope.launch {
+            viewModel.stateFlow.collectLatest {
+                this@MoviesListFragment.setStateEvent(it)
+            }
+        }
+    }
+
+    override fun loadData() {
+        viewModel.loadMovies()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun bindViews(data: Any) {
+        lifecycleScope.launch {
+            val movies = data as PagingData<Movie>
+            moviesAdapter?.submitData(movies)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -85,20 +114,16 @@ class MoviesListFragment : Fragment() {
         }
     }
 
-    private fun setupViews(view: View) {
-        spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-            VERTICAL_SPAN_COUNT else HORIZONTAL_SPAN_COUNT
+    private fun addLoadState(loadState: CombinedLoadStates) {
+        loader?.isVisible = loadState.source.refresh is LoadState.Loading
+        retryButton?.isVisible = loadState.source.refresh is LoadState.Error
 
-        moviesAdapter = MoviesAdapter(clickListener)
-        recycler = view.findViewById(R.id.movie_list)
-        recycler?.apply {
-            layoutManager = GridLayoutManager(context, spanCount)
-            adapter = moviesAdapter
-        }
-    }
+        val errorState = loadState.source.append as? LoadState.Error
+                ?:loadState.source.prepend as? LoadState.Error
+                ?: loadState.append as? LoadState.Error
+                ?: loadState.prepend as? LoadState.Error
 
-    private fun loadData(movies: List<Movie>) {
-        moviesAdapter?.bindMovies(movies)
+        errorState?.let { showMessage(it.error.message ?: "") }
     }
 
     private fun doOnClick(movie: Movie) {

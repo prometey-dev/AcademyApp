@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Movie</string>
 
+    <string name="internet_connection_error_text">Internet connection error</string>
+    <string name="parsing_error_text">Json parsing error</string>
+    <string name="unexpected_error_text">Unexpected error happened</string>
+
     <string name="age_limit">%1$d+</string>
     <string name="avengers_end_game">Avengers:\nEnd Game</string>
     <string name="action_adventure_fantasy">Action, Adventure, Fantasy</string>
@@ -19,4 +23,5 @@
 
     <string name="actors_not_laded_message">Actors list not loaded</string>
 
+    <string name="retry">Retry</string>
 </resources>

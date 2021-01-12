@@ -1,26 +1,37 @@
 package ru.prometeydev.movie.ui.movieslist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-import ru.prometeydev.movie.data.Movie
-import ru.prometeydev.movie.data.MoviesRepository
+import androidx.paging.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import ru.prometeydev.movie.model.MoviesPagingSource
+import ru.prometeydev.movie.model.local.Movie
+import ru.prometeydev.movie.model.MoviesRepository
+import ru.prometeydev.movie.ui.base.BaseViewModel
+import ru.prometeydev.movie.ui.base.Result
 
 class MoviesListViewModel(
     private val repository: MoviesRepository
-): ViewModel() {
+): BaseViewModel<PagingData<Movie>>() {
 
-    private val _mutableMoviesListState = MutableLiveData<List<Movie>>(emptyList())
+    private var currentMoviesResult: Flow<PagingData<Movie>>? = null
 
-    val moviesListState: LiveData<List<Movie>> get() = _mutableMoviesListState
+    val stateFlow: StateFlow<Result<PagingData<Movie>>> get() = mutableStateFlow
 
-    fun updateMovies() {
-        if (_mutableMoviesListState.value.isNullOrEmpty()) {
-            viewModelScope.launch {
-                _mutableMoviesListState.value = repository.loadMovies()
-            }
+    fun loadMovies() {
+        val lastResult = currentMoviesResult
+        if (lastResult != null) {
+            return
+        }
+
+        requestWithStateFlow {
+            val newResult: Flow<PagingData<Movie>> = Pager(
+                    config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+                    pagingSourceFactory = { MoviesPagingSource(repository) }
+            ).flow.cachedIn(viewModelScope)
+            currentMoviesResult = newResult
+            newResult
         }
     }
 

@@ -109,21 +109,10 @@
             android:maxLines="2"
             android:ellipsize="end"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/time_movie"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/movie_item_image"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="@string/avengers_end_game_movie_item"/>
-
-        <TextView
-            android:id="@+id/time_movie"
-            style="@style/TimeMovieStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
-            android:layout_marginBottom="@dimen/margin_tiny"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:ignore="SmallSp"
-            tools:text="137 min"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
