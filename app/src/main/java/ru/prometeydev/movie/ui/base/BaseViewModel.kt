@@ -15,7 +15,6 @@ open class BaseViewModel<T> : ViewModel() {
 
     protected val mutableStateFlow: MutableStateFlow<Result<T>> = MutableStateFlow(Result.Loading)
 
-    @Suppress("UNCHECKED_CAST")
     protected fun requestWithLiveData(
         request: suspend () -> T
     ) {
