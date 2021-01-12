@@ -9,38 +9,39 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-open class BaseViewModel<R> : ViewModel() {
+open class BaseViewModel<T> : ViewModel() {
 
-    protected val mutableLiveData: MutableLiveData<R> = MutableLiveData()
+    protected val mutableLiveData: MutableLiveData<Result<T>> = MutableLiveData()
+
+    protected val mutableStateFlow: MutableStateFlow<Result<T>> = MutableStateFlow(Result.Loading)
 
     @Suppress("UNCHECKED_CAST")
-    protected fun <T> requestWithLiveData(
+    protected fun requestWithLiveData(
         request: suspend () -> T
     ) {
         viewModelScope.launch {
             try {
-                mutableLiveData.postValue(Result.Loading as R)
+                mutableLiveData.postValue(Result.Loading)
                 val response = request.invoke()
-                mutableLiveData.postValue(Result.Success(response) as R)
+                mutableLiveData.postValue(Result.Success(response))
             } catch (ex: Throwable) {
-                mutableLiveData.postValue(Result.Error(ex.message ?: "") as R)
+                mutableLiveData.postValue(Result.Error(ex.message ?: ""))
             }
         }
     }
 
-    protected fun <T> requestWithStateFlow(
-        stateFlow: MutableStateFlow<Result>,
+    protected fun requestWithStateFlow(
         request: () -> Flow<T>
     ) {
         viewModelScope.launch {
             try {
-                stateFlow.value = Result.Loading
+                mutableStateFlow.value = Result.Loading
                 val response = request.invoke()
                 response.collectLatest {
-                    stateFlow.value = Result.Success(it)
+                    mutableStateFlow.value = Result.Success(it)
                 }
             } catch (e: Exception) {
-                stateFlow.value = Result.Error(e.message ?: "")
+                mutableStateFlow.value = Result.Error(e.message ?: "")
             }
         }
     }

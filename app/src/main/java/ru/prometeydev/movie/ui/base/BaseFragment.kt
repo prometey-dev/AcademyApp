@@ -39,7 +39,7 @@ abstract class BaseFragment : Fragment() {
         destroyViews()
     }
 
-    protected fun setStateEvent(result: Result) {
+    protected fun setStateEvent(result: Result<*>) {
         when (result) {
             is Result.Loading -> {
                 loader?.isVisible = true

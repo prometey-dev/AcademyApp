@@ -70,7 +70,7 @@ class MoviesListFragment : BaseFragment() {
     override fun startObserve() {
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
-            viewModel.state.collectLatest {
+            viewModel.stateFlow.collectLatest {
                 this@MoviesListFragment.setStateEvent(it)
             }
         }

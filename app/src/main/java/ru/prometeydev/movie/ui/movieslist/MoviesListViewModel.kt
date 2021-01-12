@@ -13,12 +13,11 @@ import ru.prometeydev.movie.ui.base.Result
 
 class MoviesListViewModel(
     private val repository: MoviesRepository
-): BaseViewModel<Result>() {
+): BaseViewModel<PagingData<Movie>>() {
 
     private var currentMoviesResult: Flow<PagingData<Movie>>? = null
 
-    private val _state = MutableStateFlow<Result>(Result.Loading)
-    val state: StateFlow<Result> get() = _state
+    val stateFlow: StateFlow<Result<PagingData<Movie>>> get() = mutableStateFlow
 
     fun loadMovies() {
         val lastResult = currentMoviesResult
@@ -26,7 +25,7 @@ class MoviesListViewModel(
             return
         }
 
-        requestWithStateFlow(_state) {
+        requestWithStateFlow {
             val newResult: Flow<PagingData<Movie>> = Pager(
                     config = PagingConfig(pageSize = 20, enablePlaceholders = false),
                     pagingSourceFactory = { MoviesPagingSource(repository) }
