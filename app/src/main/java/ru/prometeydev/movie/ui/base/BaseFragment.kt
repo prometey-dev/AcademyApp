@@ -6,12 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import kotlinx.coroutines.Job
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.showMessage
 
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment<T> : Fragment() {
 
     protected var loader: View? = null
+
+    protected var job: Job? = null
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -50,7 +53,10 @@ abstract class BaseFragment : Fragment() {
             }
             is Result.Success<*> -> {
                 loader?.isVisible = false
-                result.data?.let { bindViews(it) }
+                result.data?.let {
+                    @Suppress("UNCHECKED_CAST")
+                    bindViews(it as T)
+                }
             }
         }
     }
@@ -60,6 +66,6 @@ abstract class BaseFragment : Fragment() {
     abstract fun startObserve()
     abstract fun destroyViews()
     abstract fun loadData()
-    abstract fun bindViews(data: Any)
+    abstract fun bindViews(data: T)
 
 }

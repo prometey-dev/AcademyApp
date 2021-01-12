@@ -1,6 +1,6 @@
 package ru.prometeydev.movie.ui.moviesdetails
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.*
 import ru.prometeydev.movie.model.MoviesRepository
 import ru.prometeydev.movie.model.local.MovieDetails
 import ru.prometeydev.movie.ui.base.BaseViewModel
@@ -10,11 +10,14 @@ class MoviesDetailsViewModel(
     private val repository: MoviesRepository
 ) : BaseViewModel<MovieDetails>() {
 
-    val liveData: LiveData<Result<MovieDetails>> get() = mutableLiveData
+    val stateFlow: StateFlow<Result<MovieDetails>> get() = mutableStateFlow
 
     fun loadMovie(movieId: Int) {
-        requestWithLiveData {
-            repository.getMovieById(movieId)
+        requestWithStateFlow {
+            flow {
+                val movie = repository.getMovieById(movieId)
+                emit(movie)
+            }
         }
     }
 

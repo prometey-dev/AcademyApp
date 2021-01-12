@@ -6,10 +6,13 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.popBack
@@ -18,7 +21,7 @@ import ru.prometeydev.movie.model.local.MovieDetails
 import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.movieslist.calculateStarsCount
 
-class MoviesDetailsFragment : BaseFragment() {
+class MoviesDetailsFragment : BaseFragment<MovieDetails>() {
 
     private val viewModel: MoviesDetailsViewModel by viewModel()
 
@@ -75,7 +78,12 @@ class MoviesDetailsFragment : BaseFragment() {
     }
 
     override fun startObserve() {
-        viewModel.liveData.observe(this.viewLifecycleOwner, this::setStateEvent)
+        job?.cancel()
+        job = lifecycleScope.launch {
+            viewModel.stateFlow.collectLatest {
+                this@MoviesDetailsFragment.setStateEvent(it)
+            }
+        }
     }
 
     override fun loadData() {
@@ -85,29 +93,27 @@ class MoviesDetailsFragment : BaseFragment() {
         }
     }
 
-    override fun bindViews(data: Any) {
-        val movie = data as MovieDetails
-
+    override fun bindViews(data: MovieDetails) {
         buttonBack?.setOnClickListener {
             popBack()
         }
-        movieBackdrop?.load(movie.backdrop)
-        ageLimit?.text = getString(R.string.age_limit, movie.minimumAge)
-        movieName?.text = movie.title
-        movieGenre?.text = movie.genres.joinToString { it.name }
-        rating?.rating = movie.ratings.calculateStarsCount()
+        movieBackdrop?.load(data.backdrop)
+        ageLimit?.text = getString(R.string.age_limit, data.minimumAge)
+        movieName?.text = data.title
+        movieGenre?.text = data.genres.joinToString { it.name }
+        rating?.rating = data.ratings.calculateStarsCount()
 
-        reviewsCount?.text = getString(R.string.reviews, movie.numberOfRatings)
+        reviewsCount?.text = getString(R.string.reviews, data.numberOfRatings)
 
-        timeMovie?.text = getString(R.string.movie_time, movie.runtime)
+        timeMovie?.text = getString(R.string.movie_time, data.runtime)
 
-        overview?.text = movie.overview
+        overview?.text = data.overview
 
         (recycler?.adapter as? ActorsAdapter)?.apply {
-            bindActors(movie.actors)
+            bindActors(data.actors)
         }
 
-        showMessageIfNeeded(movie.actors.isNullOrEmpty())
+        showMessageIfNeeded(data.actors.isNullOrEmpty())
     }
 
     private fun showMessageIfNeeded(hasNoActors: Boolean) {
