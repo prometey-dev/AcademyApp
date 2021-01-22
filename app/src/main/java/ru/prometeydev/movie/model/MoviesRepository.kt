@@ -1,62 +1,73 @@
 package ru.prometeydev.movie.model
 
-import ru.prometeydev.movie.model.domain.MovieDetailsDto
-import ru.prometeydev.movie.model.domain.MovieDto
-import ru.prometeydev.movie.model.domain.PopularMoviesDto
-import ru.prometeydev.movie.model.local.Actor
-import ru.prometeydev.movie.model.local.Genre
-import ru.prometeydev.movie.model.local.Movie
-import ru.prometeydev.movie.model.local.MovieDetails
+import kotlinx.coroutines.flow.*
+import ru.prometeydev.movie.model.network.dto.*
+import ru.prometeydev.movie.model.domain.Actor
+import ru.prometeydev.movie.model.domain.Genre
+import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.model.network.MoviesApi
-import ru.prometeydev.movie.model.network.MoviesApiProvider
+import ru.prometeydev.movie.model.database.dao.MoviesDao
+import ru.prometeydev.movie.model.database.entitiy.ActorEntity
+import ru.prometeydev.movie.model.database.entitiy.GenreEntity
+import ru.prometeydev.movie.model.database.entitiy.MoviesEntity
+import ru.prometeydev.movie.ui.base.Result
 
-class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
+class MoviesRepository(
+    private val api: MoviesApi,
+    private val dao: MoviesDao
+): BaseUseCases() {
 
-    private val api: MoviesApi = network.api
+    private var baseImageUrl = ""
 
-    private lateinit var baseImageUrl: String
+    private var genres: List<GenreDto> = emptyList()
 
-    private var genres: List<Genre> = emptyList()
+    fun getMovieById(movieId: Int): Flow<Result<Movie>> {
+        return networkBoundResult(
+                fetchFromLocal = { dao.getMovieById(movieId) },
+                mapEntityToModel = { entity ->
+                    mapMoviesEntityToDomain(entity)
+                },
+                shouldFetchFromRemote = { entity ->
+                    entity?.actors.isNullOrEmpty()
+                },
+                fetchFromRemote = { api.getCredits(movieId) },
+                saveRemoteData = { casts ->
+                    dao.addActorsToTheMovie(movieId, casts.actors)
+                    dao.insertOrUpdateActors(
+                        actors = mapListActorsDtoToEntity(casts.actors)
+                    )
+                }
+        )
+    }
 
     suspend fun loadMovies(page: Int): PopularMoviesDto = execute {
-        baseImageUrl = getImageUrl()
+        if (baseImageUrl.isEmpty()) {
+            baseImageUrl = getImageUrl()
+        }
 
         if (genres.isEmpty()) {
             genres = loadGenres()
-        }
-        api.getMoviesPopular(page)
-        //mapMovies(data.results)
-    }
-
-    suspend fun getMovieById(movieId: Int): MovieDetails = execute {
-        baseImageUrl = getImageUrl()
-
-        val actorsMap = loadActorsByMovie(movieId)
-        val data = api.getMovieDetails(movieId)
-        mapMovieDetails(data, actorsMap)
-    }
-
-    private suspend fun getImageUrl(): String = execute {
-        api.getConfiguration().images.secureBaseUrl
-    }
-
-    private suspend fun loadGenres(): List<Genre> = execute {
-        val data = api.getGenresList()
-        data.genres.map {
-            Genre(
-                id = it.id,
-                name = it.name
+            dao.insertOrUpdateGenres(
+                genres = mapListGenresDtoToEntity(genres)
             )
         }
+        val response = api.getMoviesPopular(page)
+        dao.insertOrUpdateMovies(
+            movies = mapListMoviesDtoToEntity(response.results)
+        )
+        response
     }
 
-    private suspend fun loadActorsByMovie(movieId: Int): List<Actor> = execute {
-        val data = api.getCredits(movieId)
-        data.actors.map {
-            Actor(
+    private suspend fun getImageUrl(): String {
+        return api.getConfiguration().images.secureBaseUrl
+    }
+
+    private suspend fun loadGenres(): List<GenreDto> {
+        val data = api.getGenresList()
+        return data.genres.map {
+            GenreDto(
                 id = it.id,
-                name = it.name,
-                picture = fullImageUrl(it.profilePicture)
+                name = it.name
             )
         }
     }
@@ -67,10 +78,8 @@ class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
         } ?: ""
     }
 
-    fun mapMovies(
-        movies: List<MovieDto>
-    ): List<Movie> {
-        val genresMap = genres.associateBy { it.id }
+    fun mapListMoviesDtoToDomain(movies: List<MovieDto>): List<Movie> {
+        val genresMap = genres.map { Genre(id = it.id, name = it.name) }.associateBy { it.id }
 
         return movies.map { movie ->
             Movie(
@@ -90,24 +99,62 @@ class MoviesRepository(network: MoviesApiProvider): BaseUseCases() {
         }
     }
 
-    private fun mapMovieDetails(
-        movie: MovieDetailsDto,
-        actors: List<Actor>
-    ): MovieDetails {
-        return MovieDetails(
+    private fun mapMoviesEntityToDomain(movie: MoviesEntity): Movie {
+        return Movie(
+                id = movie.id,
+                title = movie.title,
+                overview = movie.overview,
+                poster = movie.posterPath,
+                backdrop = movie.backdropPath,
+                numberOfRatings = movie.numberOfRatings,
+                minimumAge = movie.minimumAge,
+                ratings = movie.ratings,
+                adult = movie.adult,
+                runtime = movie.runtime,
+                genres = movie.genres.map { Genre(it.id, it.name) },
+                actors = movie.actors.map { Actor(it.id, it.name, fullImageUrl(it.profilePicture)) }
+        )
+    }
+
+    private fun mapMovieDtoToEntity(movie: MovieDto): MoviesEntity {
+        val genresMap = genres.associateBy { it.id }
+
+        return MoviesEntity(
             id = movie.id,
             title = movie.title,
             overview = movie.overview,
-            poster = fullImageUrl(movie.posterPicture),
-            backdrop = fullImageUrl(movie.backdropPicture),
+            posterPath = fullImageUrl(movie.posterPicture),
+            backdropPath = fullImageUrl(movie.backdropPicture),
             numberOfRatings = movie.votesCount,
             minimumAge = if (movie.adult) 16 else 13,
             ratings = movie.ratings,
             adult = movie.adult,
-            runtime = movie.runtime,
-            genres = movie.genres.map { Genre(it.id, it.name) },
-            actors = actors
+            runtime = null,
+            genres = movie.genreIds.map {
+                genresMap[it] ?: throw IllegalArgumentException("Genre not found")
+            },
+            actors = emptyList()
         )
+    }
+
+    private fun mapListMoviesDtoToEntity(movies: List<MovieDto>): List<MoviesEntity> {
+        return movies.map { mapMovieDtoToEntity(it) }
+    }
+
+    private fun mapListGenresDtoToEntity(genres: List<GenreDto>): List<GenreEntity> {
+        return genres.map { genre ->
+            GenreEntity(id = genre.id, name = genre.name)
+        }
+    }
+
+    private fun mapListActorsDtoToEntity(actors: List<ActorDto>): List<ActorEntity> {
+        return actors.map { actor ->
+            ActorEntity(
+                id = actor.id,
+                name = actor.name,
+                picturePath = fullImageUrl(actor.profilePicture)
+            )
+        }
     }
 
     companion object {

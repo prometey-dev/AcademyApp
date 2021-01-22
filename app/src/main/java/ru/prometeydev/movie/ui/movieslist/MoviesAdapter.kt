@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.model.local.Movie
+import ru.prometeydev.movie.model.domain.Movie
 
 /**
  * Адаптер для списка фильмов

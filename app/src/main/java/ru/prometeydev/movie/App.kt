@@ -3,6 +3,7 @@ package ru.prometeydev.movie
 import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import ru.prometeydev.movie.di.databaseModule
 import ru.prometeydev.movie.di.networkModule
 import ru.prometeydev.movie.di.repoModule
 import ru.prometeydev.movie.di.viewModelModule
@@ -14,7 +15,7 @@ class App : Application() {
 
         startKoin {
             androidContext(this@App)
-            modules(listOf(networkModule, repoModule, viewModelModule))
+            modules(listOf(networkModule, repoModule, viewModelModule, databaseModule))
         }
     }
 

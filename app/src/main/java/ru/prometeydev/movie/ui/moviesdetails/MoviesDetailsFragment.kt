@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,12 +17,11 @@ import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.popBack
-import ru.prometeydev.movie.common.showMessage
-import ru.prometeydev.movie.model.local.MovieDetails
+import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.movieslist.calculateStarsCount
 
-class MoviesDetailsFragment : BaseFragment<MovieDetails>() {
+class MoviesDetailsFragment : BaseFragment<Movie>() {
 
     private val viewModel: MoviesDetailsViewModel by viewModel()
 
@@ -42,12 +42,12 @@ class MoviesDetailsFragment : BaseFragment<MovieDetails>() {
         buttonBack = view.findViewById(R.id.button_back)
         movieBackdrop = view.findViewById(R.id.movie_logo)
         ageLimit = view.findViewById(R.id.age_limit)
-        movieName = view.findViewById<TextView>(R.id.movie_name)
-        movieGenre = view.findViewById<TextView>(R.id.movie_genre)
-        rating = view.findViewById<RatingBar>(R.id.rating)
-        reviewsCount = view.findViewById<TextView>(R.id.reviews_count)
-        timeMovie = view.findViewById<TextView>(R.id.time_movie)
-        overview = view.findViewById<TextView>(R.id.description)
+        movieName = view.findViewById(R.id.movie_name)
+        movieGenre = view.findViewById(R.id.movie_genre)
+        rating = view.findViewById(R.id.rating)
+        reviewsCount = view.findViewById(R.id.reviews_count)
+        timeMovie = view.findViewById(R.id.time_movie)
+        overview = view.findViewById(R.id.description)
 
         recycler = view.findViewById<RecyclerView>(R.id.actor_list).apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
@@ -93,7 +93,7 @@ class MoviesDetailsFragment : BaseFragment<MovieDetails>() {
         }
     }
 
-    override fun bindViews(data: MovieDetails) {
+    override fun bindViews(data: Movie) {
         buttonBack?.setOnClickListener {
             popBack()
         }
@@ -105,20 +105,15 @@ class MoviesDetailsFragment : BaseFragment<MovieDetails>() {
 
         reviewsCount?.text = getString(R.string.reviews, data.numberOfRatings)
 
-        timeMovie?.text = getString(R.string.movie_time, data.runtime)
+        timeMovie?.apply {
+            this.text = getString(R.string.movie_time, data.runtime)
+            this.isVisible = data.runtime != null
+        }
 
         overview?.text = data.overview
 
         (recycler?.adapter as? ActorsAdapter)?.apply {
             bindActors(data.actors)
-        }
-
-        showMessageIfNeeded(data.actors.isNullOrEmpty())
-    }
-
-    private fun showMessageIfNeeded(hasNoActors: Boolean) {
-        if (hasNoActors) {
-            showMessage(getString(R.string.actors_not_laded_message))
         }
     }
 

@@ -6,6 +6,6 @@ import ru.prometeydev.movie.ui.moviesdetails.MoviesDetailsViewModel
 import ru.prometeydev.movie.ui.movieslist.MoviesListViewModel
 
 val viewModelModule = module {
-    viewModel { MoviesListViewModel(get()) }
-    viewModel { MoviesDetailsViewModel(get()) }
+    viewModel { MoviesListViewModel(repository = get()) }
+    viewModel { MoviesDetailsViewModel(repository = get()) }
 }

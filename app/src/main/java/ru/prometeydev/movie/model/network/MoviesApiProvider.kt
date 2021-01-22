@@ -8,7 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import ru.prometeydev.movie.BuildConfig
-import ru.prometeydev.movie.model.network.MoviesApiProvider.Companion.API_KEY
+import ru.prometeydev.movie.model.network.calladapter.FlowCallAdapterFactory
 import java.util.concurrent.TimeUnit
 
 class MoviesApiProvider {
@@ -33,6 +33,7 @@ class MoviesApiProvider {
     private fun setupApi() {
         val retrofit = Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
+            .addCallAdapterFactory(FlowCallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create())
             .client(okHttpClient)
             .build()
@@ -60,8 +61,6 @@ class MoviesApiProvider {
     companion object {
         private const val CONNECTION_TIMEOUT = 15L
         private const val READ_TIMEOUT = 15L
-
-        private const val API_KEY = "6919274aeda3b6ad96593bb0eafb4afd"
     }
 
 }

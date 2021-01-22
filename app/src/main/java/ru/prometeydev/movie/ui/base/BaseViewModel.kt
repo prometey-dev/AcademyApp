@@ -28,4 +28,15 @@ open class BaseViewModel<T> : ViewModel() {
         }
     }
 
+    protected fun requestWithStateFlowFromResult(
+        request: () -> Flow<Result<T>>
+    ) {
+        viewModelScope.launch {
+            val response = request.invoke()
+            response.collectLatest {
+                mutableStateFlow.value = it
+            }
+        }
+    }
+
 }

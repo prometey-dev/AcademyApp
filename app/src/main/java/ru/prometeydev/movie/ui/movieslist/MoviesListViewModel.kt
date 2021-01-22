@@ -3,10 +3,9 @@ package ru.prometeydev.movie.ui.movieslist
 import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import ru.prometeydev.movie.model.MoviesPagingSource
-import ru.prometeydev.movie.model.local.Movie
+import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.model.MoviesRepository
 import ru.prometeydev.movie.ui.base.BaseViewModel
 import ru.prometeydev.movie.ui.base.Result

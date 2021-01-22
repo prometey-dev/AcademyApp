@@ -12,17 +12,15 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.show
 import ru.prometeydev.movie.common.showMessage
-import ru.prometeydev.movie.model.local.Movie
+import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.moviesdetails.MoviesDetailsFragment
-
 
 class MoviesListFragment : BaseFragment<PagingData<Movie>>() {
 
