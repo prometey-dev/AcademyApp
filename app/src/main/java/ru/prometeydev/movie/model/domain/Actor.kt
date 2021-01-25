@@ -1,4 +1,4 @@
-package ru.prometeydev.movie.model.local
+package ru.prometeydev.movie.model.domain
 
 data class Actor(
     val id: Int,

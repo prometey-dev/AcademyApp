@@ -1,23 +1,22 @@
-package ru.prometeydev.movie.model.domain
+package ru.prometeydev.movie.model.network.dto
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class MovieDetailsDto(
+data class MovieDto(
     val id: Int,
     val title: String,
     @Json(name = "poster_path")
     val posterPicture: String?,
     @Json(name = "backdrop_path")
     val backdropPicture: String?,
-    val runtime: Int?,
-    val genres: List<GenreDto>,
+    @Json(name = "genre_ids")
+    val genreIds: List<Int>,
     @Json(name = "vote_count")
     val votesCount: Int,
     @Json(name = "vote_average")
     val ratings: Float,
-    val overview: String?,
-    @Json(name = "adult")
+    val overview: String,
     val adult: Boolean
 )

@@ -6,19 +6,22 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.popBack
-import ru.prometeydev.movie.common.showMessage
-import ru.prometeydev.movie.model.local.MovieDetails
+import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.movieslist.calculateStarsCount
 
-class MoviesDetailsFragment : BaseFragment() {
+class MoviesDetailsFragment : BaseFragment<Movie>() {
 
     private val viewModel: MoviesDetailsViewModel by viewModel()
 
@@ -39,12 +42,12 @@ class MoviesDetailsFragment : BaseFragment() {
         buttonBack = view.findViewById(R.id.button_back)
         movieBackdrop = view.findViewById(R.id.movie_logo)
         ageLimit = view.findViewById(R.id.age_limit)
-        movieName = view.findViewById<TextView>(R.id.movie_name)
-        movieGenre = view.findViewById<TextView>(R.id.movie_genre)
-        rating = view.findViewById<RatingBar>(R.id.rating)
-        reviewsCount = view.findViewById<TextView>(R.id.reviews_count)
-        timeMovie = view.findViewById<TextView>(R.id.time_movie)
-        overview = view.findViewById<TextView>(R.id.description)
+        movieName = view.findViewById(R.id.movie_name)
+        movieGenre = view.findViewById(R.id.movie_genre)
+        rating = view.findViewById(R.id.rating)
+        reviewsCount = view.findViewById(R.id.reviews_count)
+        timeMovie = view.findViewById(R.id.time_movie)
+        overview = view.findViewById(R.id.description)
 
         recycler = view.findViewById<RecyclerView>(R.id.actor_list).apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
@@ -75,7 +78,12 @@ class MoviesDetailsFragment : BaseFragment() {
     }
 
     override fun startObserve() {
-        viewModel.liveData.observe(this.viewLifecycleOwner, this::setStateEvent)
+        job?.cancel()
+        job = lifecycleScope.launch {
+            viewModel.stateFlow.collectLatest {
+                this@MoviesDetailsFragment.setStateEvent(it)
+            }
+        }
     }
 
     override fun loadData() {
@@ -85,34 +93,27 @@ class MoviesDetailsFragment : BaseFragment() {
         }
     }
 
-    override fun bindViews(data: Any) {
-        val movie = data as MovieDetails
-
+    override fun bindViews(data: Movie) {
         buttonBack?.setOnClickListener {
             popBack()
         }
-        movieBackdrop?.load(movie.backdrop)
-        ageLimit?.text = getString(R.string.age_limit, movie.minimumAge)
-        movieName?.text = movie.title
-        movieGenre?.text = movie.genres.joinToString { it.name }
-        rating?.rating = movie.ratings.calculateStarsCount()
+        movieBackdrop?.load(data.backdrop)
+        ageLimit?.text = getString(R.string.age_limit, data.minimumAge)
+        movieName?.text = data.title
+        movieGenre?.text = data.genres.joinToString { it.name }
+        rating?.rating = data.ratings.calculateStarsCount()
 
-        reviewsCount?.text = getString(R.string.reviews, movie.numberOfRatings)
+        reviewsCount?.text = getString(R.string.reviews, data.numberOfRatings)
 
-        timeMovie?.text = getString(R.string.movie_time, movie.runtime)
-
-        overview?.text = movie.overview
-
-        (recycler?.adapter as? ActorsAdapter)?.apply {
-            bindActors(movie.actors)
+        timeMovie?.apply {
+            this.text = getString(R.string.movie_time, data.runtime)
+            this.isVisible = data.runtime != null
         }
 
-        showMessageIfNeeded(movie.actors.isNullOrEmpty())
-    }
+        overview?.text = data.overview
 
-    private fun showMessageIfNeeded(hasNoActors: Boolean) {
-        if (hasNoActors) {
-            showMessage(getString(R.string.actors_not_laded_message))
+        (recycler?.adapter as? ActorsAdapter)?.apply {
+            bindActors(data.actors)
         }
     }
 

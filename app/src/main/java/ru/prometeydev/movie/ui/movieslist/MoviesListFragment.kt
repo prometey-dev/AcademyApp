@@ -11,21 +11,18 @@ import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.show
 import ru.prometeydev.movie.common.showMessage
-import ru.prometeydev.movie.model.local.Movie
+import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.moviesdetails.MoviesDetailsFragment
 
-
-class MoviesListFragment : BaseFragment() {
+class MoviesListFragment : BaseFragment<PagingData<Movie>>() {
 
     private val viewModel: MoviesListViewModel by viewModel()
 
@@ -34,8 +31,6 @@ class MoviesListFragment : BaseFragment() {
     private var retryButton: Button? = null
     private var spanCount = VERTICAL_SPAN_COUNT
     private var savedRecyclerLayoutState: Parcelable? = null
-
-    private var searchJob: Job? = null
 
     override fun layoutId() = R.layout.fragment_movies_list
 
@@ -68,8 +63,8 @@ class MoviesListFragment : BaseFragment() {
     }
 
     override fun startObserve() {
-        searchJob?.cancel()
-        searchJob = lifecycleScope.launch {
+        job?.cancel()
+        job = lifecycleScope.launch {
             viewModel.stateFlow.collectLatest {
                 this@MoviesListFragment.setStateEvent(it)
             }
@@ -80,11 +75,9 @@ class MoviesListFragment : BaseFragment() {
         viewModel.loadMovies()
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun bindViews(data: Any) {
+    override fun bindViews(data: PagingData<Movie>) {
         lifecycleScope.launch {
-            val movies = data as PagingData<Movie>
-            moviesAdapter?.submitData(movies)
+            moviesAdapter?.submitData(data)
         }
     }
 

@@ -3,21 +3,59 @@ package ru.prometeydev.movie.model
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import ru.prometeydev.movie.common.errors.ConnectionErrorException
 import ru.prometeydev.movie.common.errors.ErrorResponseException
 import ru.prometeydev.movie.common.errors.UnexpectedErrorException
-import ru.prometeydev.movie.model.domain.ErrorResponse
+import ru.prometeydev.movie.model.network.dto.ErrorResponse
+import ru.prometeydev.movie.model.network.response.ApiErrorResponse
+import ru.prometeydev.movie.model.network.response.ApiResponse
+import ru.prometeydev.movie.model.network.response.ApiSuccessResponse
+import ru.prometeydev.movie.ui.base.Result
 import java.io.IOException
 import java.lang.Exception
-import java.net.*
 
-abstract class BaseUseCases {
+abstract class BaseRepo {
 
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
     private val moshi: Moshi = Moshi.Builder().build()
+
+    fun <MODEL, ENTITY, REMOTE> networkBoundResult(
+            fetchFromLocal: () -> Flow<ENTITY>,
+            mapEntityToModel: (ENTITY) -> MODEL,
+            shouldFetchFromRemote: (ENTITY?) -> Boolean = { true },
+            fetchFromRemote: () -> Flow<ApiResponse<REMOTE>>,
+            saveRemoteData: (REMOTE) -> Unit = { },
+    ) = flow {
+        emit(Result.Loading)
+
+        val localData = fetchFromLocal().first()
+
+        if (shouldFetchFromRemote(localData)) {
+            emit(Result.Loading)
+
+            fetchFromRemote().collect { apiResponse ->
+                when (apiResponse) {
+                    is ApiSuccessResponse -> {
+                        apiResponse.body?.let { saveRemoteData(it) }
+                    }
+
+                    is ApiErrorResponse -> {
+                        emit(Result.Error(apiResponse.errorMessage))
+                    }
+                }
+            }
+        }
+
+        emitAll(
+            fetchFromLocal()
+                .map { mapEntityToModel(it) }
+                .map { Result.Success(it) }
+        )
+    }.flowOn(dispatcher)
 
     protected suspend fun <T> execute(request: suspend () -> T) = withContext(dispatcher) {
         try {

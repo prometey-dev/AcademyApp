@@ -1,10 +1,7 @@
 package ru.prometeydev.movie.model
 
 import androidx.paging.PagingSource
-import retrofit2.HttpException
-import ru.prometeydev.movie.model.local.Movie
-import java.io.IOException
-import java.lang.Exception
+import ru.prometeydev.movie.model.domain.Movie
 
 class MoviesPagingSource(
     private val repository: MoviesRepository
@@ -15,7 +12,7 @@ class MoviesPagingSource(
         return try {
             val response = repository.loadMovies(page)
             LoadResult.Page(
-                data = repository.mapMovies(response.results),
+                data = repository.mapListMoviesDtoToDomain(response.results),
                 prevKey = if (page == STARTING_PAGE_INDEX) null else page - 1,
                 nextKey = if (page == response.pagesCount - 1) null else page + 1
             )

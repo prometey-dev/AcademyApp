@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import ru.prometeydev.movie.R
-import ru.prometeydev.movie.model.local.Actor
+import ru.prometeydev.movie.model.domain.Actor
 
 /**
  * Адаптер для списка актеров
