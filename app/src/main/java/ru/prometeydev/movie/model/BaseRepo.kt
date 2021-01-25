@@ -17,7 +17,7 @@ import ru.prometeydev.movie.ui.base.Result
 import java.io.IOException
 import java.lang.Exception
 
-abstract class BaseUseCases {
+abstract class BaseRepo {
 
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
@@ -29,12 +29,10 @@ abstract class BaseUseCases {
             shouldFetchFromRemote: (ENTITY?) -> Boolean = { true },
             fetchFromRemote: () -> Flow<ApiResponse<REMOTE>>,
             saveRemoteData: (REMOTE) -> Unit = { },
-            onFetchFailed: (errorBody: String?, statusCode: Int) -> Unit = { _: String?, _: Int -> }
     ) = flow {
         emit(Result.Loading)
 
-        val localFlow = fetchFromLocal()
-        val localData = localFlow.first()
+        val localData = fetchFromLocal().first()
 
         if (shouldFetchFromRemote(localData)) {
             emit(Result.Loading)
@@ -43,34 +41,20 @@ abstract class BaseUseCases {
                 when (apiResponse) {
                     is ApiSuccessResponse -> {
                         apiResponse.body?.let { saveRemoteData(it) }
-                        emitAll(
-                            fetchFromLocal().map { dbData ->
-                                mapEntityToModel(dbData)
-                            }.map { modelData ->
-                                Result.Success(modelData)
-                            }
-                        )
                     }
 
                     is ApiErrorResponse -> {
-                        onFetchFailed(apiResponse.errorMessage, apiResponse.statusCode)
                         emit(Result.Error(apiResponse.errorMessage))
-                        emitAll(
-                            localFlow
-                                .map { mapEntityToModel(it) }
-                                .map { Result.Success(it) }
-                        )
                     }
                 }
             }
-
-        } else {
-            emitAll(
-                fetchFromLocal()
-                    .map { mapEntityToModel(it) }
-                    .map { Result.Success(it) }
-            )
         }
+
+        emitAll(
+            fetchFromLocal()
+                .map { mapEntityToModel(it) }
+                .map { Result.Success(it) }
+        )
     }.flowOn(dispatcher)
 
     protected suspend fun <T> execute(request: suspend () -> T) = withContext(dispatcher) {

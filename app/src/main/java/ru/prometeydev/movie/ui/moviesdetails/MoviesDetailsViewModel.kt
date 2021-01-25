@@ -13,8 +13,11 @@ class MoviesDetailsViewModel(
     val stateFlow: StateFlow<Result<Movie>> get() = mutableStateFlow
 
     fun loadMovie(movieId: Int) {
-        requestWithStateFlowFromResult {
-            repository.getMovieById(movieId)
+        requestWithStateFlow {
+            flow {
+                val movie = repository.getMovieById(movieId)
+                emit(movie)
+            }
         }
     }
 

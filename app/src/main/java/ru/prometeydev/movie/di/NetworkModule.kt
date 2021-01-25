@@ -5,5 +5,5 @@ import ru.prometeydev.movie.model.network.MoviesApiProvider
 
 val networkModule = module {
     single { MoviesApiProvider() }
-    single { MoviesApiProvider().api }
+    single(createdAtStart = false) { get<MoviesApiProvider>().api }
 }

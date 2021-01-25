@@ -4,6 +4,8 @@ import androidx.room.TypeConverter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import ru.prometeydev.movie.model.database.entitiy.ActorEntity
+import ru.prometeydev.movie.model.database.entitiy.GenreEntity
 import ru.prometeydev.movie.model.network.dto.ActorDto
 import ru.prometeydev.movie.model.network.dto.GenreDto
 import java.lang.reflect.Type
@@ -15,16 +17,16 @@ class DataConverter {
             .build()
 
     @TypeConverter
-    fun listGenresToJson(value: List<GenreDto>): String = toJson(value)
+    fun listGenresToJson(value: List<GenreEntity>): String = toJson(value)
 
     @TypeConverter
-    fun jsonToListGenres(value: String): List<GenreDto>? = fromJson(value)
+    fun jsonToListGenres(value: String): List<GenreEntity>? = fromJson(value)
 
     @TypeConverter
-    fun listActorsToJson(value: List<ActorDto>): String = toJson(value)
+    fun listActorsToJson(value: List<ActorEntity>): String = toJson(value)
 
     @TypeConverter
-    fun jsonToListActors(value: String): List<ActorDto>? = fromJson(value)
+    fun jsonToListActors(value: String): List<ActorEntity>? = fromJson(value)
 
     private inline fun <reified T> fromJson(value: String): List<T>? {
         val type: Type = Types.newParameterizedType(List::class.java, T::class.java)

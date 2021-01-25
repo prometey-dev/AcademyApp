@@ -10,7 +10,7 @@ import ru.prometeydev.movie.model.network.response.ApiResponse
 interface MoviesApi {
 
     @GET("movie/{movie_id}/credits")
-    fun getCredits(@Path("movie_id") movieId: Int): Flow<ApiResponse<CastsDto>>
+    suspend fun getCredits(@Path("movie_id") movieId: Int): CastsDto
 
     @GET("movie/popular")
     suspend fun getMoviesPopular(@Query("page") page: Int): PopularMoviesDto

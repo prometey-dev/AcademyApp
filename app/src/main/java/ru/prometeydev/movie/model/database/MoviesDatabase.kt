@@ -9,13 +9,13 @@ import ru.prometeydev.movie.model.database.converters.DataConverter
 import ru.prometeydev.movie.model.database.dao.MoviesDao
 import ru.prometeydev.movie.model.database.entitiy.ActorEntity
 import ru.prometeydev.movie.model.database.entitiy.GenreEntity
-import ru.prometeydev.movie.model.database.entitiy.MoviesEntity
+import ru.prometeydev.movie.model.database.entitiy.MovieEntity
 
 @Database(
     entities = [
         ActorEntity::class,
         GenreEntity::class,
-        MoviesEntity::class
+        MovieEntity::class
     ],
     version = 3
 )
