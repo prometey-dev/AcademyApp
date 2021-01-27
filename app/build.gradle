@@ -63,9 +63,9 @@ dependencies {
     implementation 'org.koin:koin-android-viewmodel:2.0.1'
     implementation 'org.koin:koin-android:2.0.1'
     implementation 'androidx.paging:paging-runtime-ktx:3.0.0-alpha12'
-    implementation "androidx.room:room-runtime:2.2.6"
-    implementation "androidx.room:room-ktx:2.2.6"
-    kapt "androidx.room:room-compiler:2.2.6"
+    implementation "androidx.room:room-runtime:2.3.0-alpha04"
+    implementation "androidx.room:room-ktx:2.3.0-alpha04"
+    kapt "androidx.room:room-compiler:2.3.0-alpha04"
 
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.11.0'
 

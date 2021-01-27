@@ -7,22 +7,26 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import ru.prometeydev.movie.model.database.converters.DataConverter
 import ru.prometeydev.movie.model.database.dao.MoviesDao
+import ru.prometeydev.movie.model.database.dao.MoviesRemoteKeysDao
 import ru.prometeydev.movie.model.database.entitiy.ActorEntity
 import ru.prometeydev.movie.model.database.entitiy.GenreEntity
 import ru.prometeydev.movie.model.database.entitiy.MovieEntity
+import ru.prometeydev.movie.model.database.entitiy.MoviesRemoteKeysEntity
 
 @Database(
     entities = [
         ActorEntity::class,
         GenreEntity::class,
-        MovieEntity::class
+        MovieEntity::class,
+        MoviesRemoteKeysEntity::class
     ],
-    version = 3
+    version = 7
 )
 @TypeConverters(DataConverter::class)
 abstract class MoviesDatabase : RoomDatabase() {
 
     abstract fun moviesDao(): MoviesDao
+    abstract fun keysDao(): MoviesRemoteKeysDao
 
     companion object {
 

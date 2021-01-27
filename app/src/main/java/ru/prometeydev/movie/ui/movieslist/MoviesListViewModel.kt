@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import ru.prometeydev.movie.model.MoviesPagingSource
 import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.model.MoviesRepository
 import ru.prometeydev.movie.ui.base.BaseViewModel
@@ -18,6 +17,7 @@ class MoviesListViewModel(
 
     val stateFlow: StateFlow<Result<PagingData<Movie>>> get() = mutableStateFlow
 
+    @ExperimentalPagingApi
     fun loadMovies() {
         val lastResult = currentMoviesResult
         if (lastResult != null) {
@@ -25,10 +25,7 @@ class MoviesListViewModel(
         }
 
         requestWithStateFlow {
-            val newResult: Flow<PagingData<Movie>> = Pager(
-                    config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-                    pagingSourceFactory = { MoviesPagingSource(repository) }
-            ).flow.cachedIn(viewModelScope)
+            val newResult = repository.letMoviesFlowDb().cachedIn(viewModelScope)
             currentMoviesResult = newResult
             newResult
         }
