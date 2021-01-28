@@ -14,6 +14,7 @@ import ru.prometeydev.movie.model.network.MoviesApi
 import java.io.IOException
 import java.io.InvalidObjectException
 
+//todo немного отрефакторить
 @ExperimentalPagingApi
 class MoviesRemoteMediator(
     private val api: MoviesApi,

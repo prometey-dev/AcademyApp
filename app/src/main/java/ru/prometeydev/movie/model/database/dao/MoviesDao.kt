@@ -2,11 +2,9 @@ package ru.prometeydev.movie.model.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 import ru.prometeydev.movie.model.database.entitiy.ActorEntity
 import ru.prometeydev.movie.model.database.entitiy.GenreEntity
 import ru.prometeydev.movie.model.database.entitiy.MovieEntity
-import ru.prometeydev.movie.model.network.dto.ActorDto
 
 @Dao
 interface MoviesDao {

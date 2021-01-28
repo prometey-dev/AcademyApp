@@ -1,23 +1,13 @@
 package ru.prometeydev.movie.model
 
 import androidx.paging.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.*
 import ru.prometeydev.movie.model.database.MoviesDatabase
-import ru.prometeydev.movie.model.network.dto.*
-import ru.prometeydev.movie.model.domain.Actor
-import ru.prometeydev.movie.model.domain.Genre
 import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.model.network.MoviesApi
-import ru.prometeydev.movie.model.database.entitiy.ActorEntity
-import ru.prometeydev.movie.model.database.entitiy.GenreEntity
-import ru.prometeydev.movie.model.database.entitiy.MovieEntity
 import ru.prometeydev.movie.model.mappers.mapListActorsDtoToEntity
-import ru.prometeydev.movie.model.mappers.mapListGenresDtoToEntity
-import ru.prometeydev.movie.model.mappers.mapListGenresEntityToDomain
 import ru.prometeydev.movie.model.mappers.mapMoviesEntityToDomain
+import ru.prometeydev.movie.ui.base.Result
 
 class MoviesRepository(
     private val api: MoviesApi,
@@ -26,11 +16,12 @@ class MoviesRepository(
 
     private var baseImageUrl = ""
 
-    suspend fun getMovieById(movieId: Int): Movie = execute {
-        if (baseImageUrl.isEmpty()) {
-            baseImageUrl = getImageUrl()
-        }
+    fun getMovieById(movieId: Int): Flow<Result<Movie>> = flow {
+        emit(Result.Loading)
 
+        if (baseImageUrl.isEmpty()) {
+            baseImageUrl = api.getConfiguration().images.secureBaseUrl
+        }
         val movie = db.moviesDao().getMovieById(movieId)
         if (movie.actors.isNullOrEmpty()) {
             val actors = api.getCredits(movieId).actors
@@ -38,12 +29,18 @@ class MoviesRepository(
             db.moviesDao().insertOrUpdateActors(
                     actors = mapListActorsDtoToEntity(actors, baseImageUrl)
             )
-            mapMoviesEntityToDomain(db.moviesDao().getMovieById(movieId))
+            emit(
+                Result.Success(mapMoviesEntityToDomain(db.moviesDao().getMovieById(movieId)))
+            )
         } else {
-            mapMoviesEntityToDomain(movie)
+            emit(Result.Success(mapMoviesEntityToDomain(movie)))
         }
-    }
+    }.catch { e ->
+        emit(Result.Error(e))
+        emit(Result.Success(mapMoviesEntityToDomain(db.moviesDao().getMovieById(movieId))))
+    }.flowOn(dispatcher)
 
+    //todo подумать как отсюда возвращать Flow<PagingData<Movie>> во ViewModel
     @ExperimentalPagingApi
     fun letMoviesFlowDb(): Flow<PagingData<Movie>> {
         return Pager(
@@ -53,10 +50,6 @@ class MoviesRepository(
         ).flow.map { pagingData ->
             pagingData.map { mapMoviesEntityToDomain(it) }
         }
-    }
-
-    private suspend fun getImageUrl(): String {
-        return api.getConfiguration().images.secureBaseUrl
     }
 
     companion object {

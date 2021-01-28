@@ -20,7 +20,8 @@ import ru.prometeydev.movie.model.database.entitiy.MoviesRemoteKeysEntity
         MovieEntity::class,
         MoviesRemoteKeysEntity::class
     ],
-    version = 7
+    version = 8,
+    exportSchema = false
 )
 @TypeConverters(DataConverter::class)
 abstract class MoviesDatabase : RoomDatabase() {

@@ -19,7 +19,7 @@ import java.lang.Exception
 
 abstract class BaseRepo {
 
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    protected val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
     private val moshi: Moshi = Moshi.Builder().build()
 
@@ -44,7 +44,7 @@ abstract class BaseRepo {
                     }
 
                     is ApiErrorResponse -> {
-                        emit(Result.Error(apiResponse.errorMessage))
+                        //emit(Result.Error(apiResponse.errorMessage))
                     }
                 }
             }
@@ -61,11 +61,21 @@ abstract class BaseRepo {
         try {
             request.invoke()
         } catch (ex: Exception) {
-            throw handleException(ex)
+            //throw handleException(ex)
         }
     }
 
-    private fun handleException(error: Throwable): Throwable {
+    //todo Доработать данный базовый метод для вызова из репозитория
+    protected fun <T> flowExecute(request: () -> T, errorRequest: () -> T) = flow {
+        emit(Result.Loading)
+        val response = request.invoke()
+        emit(response)
+    }.catch { e ->
+        emit(Result.Error(handleException(e.cause)))
+        emit(Result.Success(errorRequest.invoke()))
+    }.flowOn(dispatcher)
+
+    private fun handleException(error: Throwable?): Throwable {
         return when (error) {
             is IOException -> ConnectionErrorException()
             is HttpException -> handleHttpException(error)
