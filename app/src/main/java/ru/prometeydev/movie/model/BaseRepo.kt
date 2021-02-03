@@ -61,19 +61,9 @@ abstract class BaseRepo {
         try {
             request.invoke()
         } catch (ex: Exception) {
-            //throw handleException(ex)
+            throw handleException(ex)
         }
     }
-
-    //todo Доработать данный базовый метод для вызова из репозитория
-    protected fun <T> flowExecute(request: () -> T, errorRequest: () -> T) = flow {
-        emit(Result.Loading)
-        val response = request.invoke()
-        emit(response)
-    }.catch { e ->
-        emit(Result.Error(handleException(e.cause)))
-        emit(Result.Success(errorRequest.invoke()))
-    }.flowOn(dispatcher)
 
     private fun handleException(error: Throwable?): Throwable {
         return when (error) {

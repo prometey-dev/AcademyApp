@@ -30,4 +30,7 @@ interface MoviesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateActors(actors: List<ActorEntity>)
 
+    @Query("UPDATE movies SET numberOfRatings = :numberOfRatings, ratings = :ratings WHERE movieId = :movieId")
+    suspend fun updateRating(movieId: Int, numberOfRatings: Int, ratings: Float): Int
+
 }

@@ -2,11 +2,13 @@ package ru.prometeydev.movie.model
 
 import androidx.paging.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 import ru.prometeydev.movie.model.database.MoviesDatabase
+import ru.prometeydev.movie.model.database.entitiy.MoviesRemoteKeysEntity
+import ru.prometeydev.movie.model.domain.Genre
 import ru.prometeydev.movie.model.domain.Movie
+import ru.prometeydev.movie.model.mappers.*
 import ru.prometeydev.movie.model.network.MoviesApi
-import ru.prometeydev.movie.model.mappers.mapListActorsDtoToEntity
-import ru.prometeydev.movie.model.mappers.mapMoviesEntityToDomain
 import ru.prometeydev.movie.ui.base.Result
 
 class MoviesRepository(
@@ -15,6 +17,7 @@ class MoviesRepository(
 ): BaseRepo() {
 
     private var baseImageUrl = ""
+    private var genres: List<Genre> = emptyList()
 
     fun getMovieById(movieId: Int): Flow<Result<Movie>> = flow {
         emit(Result.Loading)
@@ -40,7 +43,6 @@ class MoviesRepository(
         emit(Result.Success(mapMoviesEntityToDomain(db.moviesDao().getMovieById(movieId))))
     }.flowOn(dispatcher)
 
-    //todo подумать как отсюда возвращать Flow<PagingData<Movie>> во ViewModel
     @ExperimentalPagingApi
     fun letMoviesFlowDb(): Flow<PagingData<Movie>> {
         return Pager(
@@ -50,6 +52,40 @@ class MoviesRepository(
         ).flow.map { pagingData ->
             pagingData.map { mapMoviesEntityToDomain(it) }
         }
+    }
+
+    suspend fun loadMoviesAndSave() = withContext(dispatcher) {
+        if (genres.isEmpty()) {
+            genres = loadGenres()
+        }
+
+        val pagesCount = db.keysDao().selectAll().size / PAGE_SIZE
+
+        for (page in 1..pagesCount) {
+            val response = api.getMoviesPopular(page)
+            response.results.forEach { movie ->
+                val isUpdated = db.moviesDao().updateRating(
+                    movieId = movie.id,
+                    numberOfRatings = movie.votesCount,
+                    ratings = movie.ratings
+                ) > 0
+
+                if (!isUpdated) {
+                    val key = MoviesRemoteKeysEntity(movieId = movie.id, prevKey = pagesCount, nextKey = pagesCount + 1)
+                    db.keysDao().insert(key)
+                    db.moviesDao().insertOrUpdateMovies(
+                            movies = mapListMoviesDtoToEntity(response.results, genres, baseImageUrl)
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun loadGenres(): List<Genre> {
+        val data = api.getGenresList()
+        val genres = mapListGenresDtoToEntity(data.genres)
+        db.moviesDao().insertOrUpdateGenres(genres)
+        return mapListGenresEntityToDomain(genres)
     }
 
     companion object {
