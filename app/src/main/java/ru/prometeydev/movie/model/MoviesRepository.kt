@@ -2,6 +2,7 @@ package ru.prometeydev.movie.model
 
 import androidx.paging.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.prometeydev.movie.model.database.MoviesDatabase
 import ru.prometeydev.movie.model.database.entitiy.MoviesRemoteKeysEntity
@@ -22,21 +23,26 @@ class MoviesRepository(
     fun getMovieById(movieId: Int): Flow<Result<Movie>> = flow {
         emit(Result.Loading)
 
-        if (baseImageUrl.isEmpty()) {
-            baseImageUrl = api.getConfiguration().images.secureBaseUrl
-        }
-        val movie = db.moviesDao().getMovieById(movieId)
-        if (movie.actors.isNullOrEmpty()) {
-            val actors = api.getCredits(movieId).actors
-            db.moviesDao().addActorsToTheMovie(movieId, mapListActorsDtoToEntity(actors, baseImageUrl))
-            db.moviesDao().insertOrUpdateActors(
+        withContext(dispatcher) {
+            launch {
+                if (baseImageUrl.isEmpty()) {
+                    baseImageUrl = api.getConfiguration().images.secureBaseUrl
+                }
+            }
+
+            val movie = db.moviesDao().getMovieById(movieId)
+            if (movie.actors.isNullOrEmpty()) {
+                val actors = api.getCredits(movieId).actors
+                db.moviesDao().updateMovieWithActors(movieId, mapListActorsDtoToEntity(actors, baseImageUrl))
+                db.moviesDao().insertActors(
                     actors = mapListActorsDtoToEntity(actors, baseImageUrl)
-            )
-            emit(
-                Result.Success(mapMoviesEntityToDomain(db.moviesDao().getMovieById(movieId)))
-            )
-        } else {
-            emit(Result.Success(mapMoviesEntityToDomain(movie)))
+                )
+                emit(
+                    Result.Success(mapMoviesEntityToDomain(db.moviesDao().getMovieById(movieId)))
+                )
+            } else {
+                emit(Result.Success(mapMoviesEntityToDomain(movie)))
+            }
         }
     }.catch { e ->
         emit(Result.Error(e))
@@ -55,8 +61,11 @@ class MoviesRepository(
     }
 
     suspend fun loadMoviesAndSave() = withContext(dispatcher) {
-        if (genres.isEmpty()) {
-            genres = loadGenres()
+
+        launch {
+            if (genres.isEmpty()) {
+                genres = loadGenres()
+            }
         }
 
         val pagesCount = db.keysDao().selectAll().size / PAGE_SIZE
@@ -73,7 +82,7 @@ class MoviesRepository(
                 if (!isUpdated) {
                     val key = MoviesRemoteKeysEntity(movieId = movie.id, prevKey = pagesCount, nextKey = pagesCount + 1)
                     db.keysDao().insert(key)
-                    db.moviesDao().insertOrUpdateMovies(
+                    db.moviesDao().insertMovies(
                             movies = mapListMoviesDtoToEntity(response.results, genres, baseImageUrl)
                     )
                 }
@@ -84,7 +93,7 @@ class MoviesRepository(
     private suspend fun loadGenres(): List<Genre> {
         val data = api.getGenresList()
         val genres = mapListGenresDtoToEntity(data.genres)
-        db.moviesDao().insertOrUpdateGenres(genres)
+        db.moviesDao().insertGenres(genres)
         return mapListGenresEntityToDomain(genres)
     }
 

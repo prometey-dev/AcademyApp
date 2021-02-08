@@ -2,6 +2,9 @@ package ru.prometeydev.movie.model
 
 import androidx.paging.*
 import androidx.room.withTransaction
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import ru.prometeydev.movie.model.database.MoviesDatabase
 import ru.prometeydev.movie.model.database.entitiy.MovieEntity
@@ -24,18 +27,23 @@ class MoviesRemoteMediator(
 
     private var genres: List<Genre> = emptyList()
 
-    override suspend fun load(loadType: LoadType, state: PagingState<Int, MovieEntity>): MediatorResult {
+    override suspend fun load(loadType: LoadType, state: PagingState<Int, MovieEntity>): MediatorResult = withContext(Dispatchers.IO) {
         val page = when (val pageKeyData = getKeyPageData(loadType, state)) {
-            is MediatorResult.Success -> return pageKeyData
+            is MediatorResult.Success -> return@withContext pageKeyData
             else -> pageKeyData as Int
         }
 
-        return try {
-            if (baseImageUrl.isEmpty()) {
-                baseImageUrl = api.getConfiguration().images.secureBaseUrl
+        return@withContext try {
+
+            launch {
+                if (baseImageUrl.isEmpty()) {
+                    baseImageUrl = api.getConfiguration().images.secureBaseUrl
+                }
             }
-            if (genres.isEmpty()) {
-                genres = loadGenres()
+            launch {
+                if (genres.isEmpty()) {
+                    genres = loadGenres()
+                }
             }
             val response = api.getMoviesPopular(page)
 
@@ -51,14 +59,12 @@ class MoviesRemoteMediator(
                     MoviesRemoteKeysEntity(movieId = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
                 db.keysDao().insertAll(keys)
-                db.moviesDao().insertOrUpdateMovies(
+                db.moviesDao().insertMovies(
                         movies = mapListMoviesDtoToEntity(response.results, genres, baseImageUrl)
                 )
             }
-            return MediatorResult.Success(endOfPaginationReached = isEndOfList)
-        } catch (e: IOException) {
-            MediatorResult.Error(e)
-        } catch (e: HttpException) {
+            return@withContext MediatorResult.Success(endOfPaginationReached = isEndOfList)
+        } catch (e: Exception) {
             MediatorResult.Error(e)
         }
 
@@ -67,7 +73,7 @@ class MoviesRemoteMediator(
     private suspend fun loadGenres(): List<Genre> {
         val data = api.getGenresList()
         val genres = mapListGenresDtoToEntity(data.genres)
-        db.moviesDao().insertOrUpdateGenres(genres)
+        db.moviesDao().insertGenres(genres)
         return mapListGenresEntityToDomain(genres)
     }
 
@@ -95,20 +101,20 @@ class MoviesRemoteMediator(
         return state.pages
                 .lastOrNull { it.data.isNotEmpty() }
                 ?.data?.lastOrNull()
-                ?.let { db.keysDao().remoteKeysByMovieId(it.movieId) }
+                ?.let { db.keysDao().getKeysByMovieId(it.movieId) }
     }
 
     private suspend fun getFirstRemoteKey(state: PagingState<Int, MovieEntity>): MoviesRemoteKeysEntity? {
         return state.pages
                 .firstOrNull { it.data.isNotEmpty() }
                 ?.data?.firstOrNull()
-                ?.let { db.keysDao().remoteKeysByMovieId(it.movieId) }
+                ?.let { db.keysDao().getKeysByMovieId(it.movieId) }
     }
 
     private suspend fun getClosestRemoteKey(state: PagingState<Int, MovieEntity>): MoviesRemoteKeysEntity? {
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.movieId?.let { movieId ->
-                db.keysDao().remoteKeysByMovieId(movieId)
+                db.keysDao().getKeysByMovieId(movieId)
             }
         }
     }
