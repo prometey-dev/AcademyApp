@@ -1,6 +1,7 @@
 package ru.prometeydev.movie.model
 
 import androidx.paging.*
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,11 +25,11 @@ class MoviesRepository(
         emit(Result.Loading)
 
         withContext(dispatcher) {
-            launch {
+            async {
                 if (baseImageUrl.isEmpty()) {
                     baseImageUrl = api.getConfiguration().images.secureBaseUrl
                 }
-            }
+            }.await()
 
             val movie = db.moviesDao().getMovieById(movieId)
             if (movie.actors.isNullOrEmpty()) {
@@ -62,11 +63,11 @@ class MoviesRepository(
 
     suspend fun loadMoviesAndSave() = withContext(dispatcher) {
 
-        launch {
+        async {
             if (genres.isEmpty()) {
                 genres = loadGenres()
             }
-        }
+        }.await()
 
         val pagesCount = db.keysDao().selectAll().size / PAGE_SIZE
 

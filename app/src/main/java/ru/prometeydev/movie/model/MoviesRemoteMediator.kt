@@ -3,6 +3,7 @@ package ru.prometeydev.movie.model
 import androidx.paging.*
 import androidx.room.withTransaction
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -35,16 +36,16 @@ class MoviesRemoteMediator(
 
         return@withContext try {
 
-            launch {
+            async {
                 if (baseImageUrl.isEmpty()) {
                     baseImageUrl = api.getConfiguration().images.secureBaseUrl
                 }
-            }
-            launch {
+            }.await()
+            async {
                 if (genres.isEmpty()) {
                     genres = loadGenres()
                 }
-            }
+            }.await()
             val response = api.getMoviesPopular(page)
 
             val isEndOfList = response.page == response.pagesCount - 1
