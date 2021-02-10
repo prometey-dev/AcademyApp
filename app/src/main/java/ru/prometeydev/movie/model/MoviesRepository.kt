@@ -25,15 +25,16 @@ class MoviesRepository(
         emit(Result.Loading)
 
         withContext(dispatcher) {
-            async {
+            val loadImageConfig = async {
                 if (baseImageUrl.isEmpty()) {
                     baseImageUrl = api.getConfiguration().images.secureBaseUrl
                 }
-            }.await()
+            }
 
             val movie = db.moviesDao().getMovieById(movieId)
             if (movie.actors.isNullOrEmpty()) {
                 val actors = api.getCredits(movieId).actors
+                loadImageConfig.await()
                 db.moviesDao().updateMovieWithActors(movieId, mapListActorsDtoToEntity(actors, baseImageUrl))
                 db.moviesDao().insertActors(
                     actors = mapListActorsDtoToEntity(actors, baseImageUrl)
