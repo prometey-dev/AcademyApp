@@ -1,10 +1,14 @@
 package ru.prometeydev.movie.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.setAsRoot
 import ru.prometeydev.movie.service.WorkRequest
+import ru.prometeydev.movie.ui.moviesdetails.MoviesDetailsFragment
 import ru.prometeydev.movie.ui.movieslist.MoviesListFragment
 
 class MainActivity : AppCompatActivity() {
@@ -18,7 +22,33 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             setAsRoot(MoviesListFragment.instance())
             workRequest.startWorker()
+            intent?.let(::handleIntent)
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let(::handleIntent)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_VIEW) {
+            intent.data?.lastPathSegment?.toIntOrNull()?.let {
+                openMovie(it)
+            }
+        }
+    }
+
+    private fun openMovie(id: Int) {
+        supportFragmentManager.popBackStack(FRAGMENT_MOVIE, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        supportFragmentManager.commit {
+            addToBackStack(FRAGMENT_MOVIE)
+            replace(R.id.main_container, MoviesDetailsFragment.instance(id))
+        }
+    }
+
+    companion object {
+        private const val FRAGMENT_MOVIE = "movie"
     }
 
 }
