@@ -29,4 +29,13 @@
     <string name="chanel_new_top_rated_movie_description">New top rated movie appears</string>
 
     <string name="new_top_rated_movie_with_rating">New top rated movie appears with raring %1$s</string>
+
+    <string name="button_schedule_watch">Schedule a watch</string>
+    <string name="button_trailer_watch">Watch a trailer</string>
+    <string name="permission_not_granted_text">Calendar permission not granted</string>
+    <string name="permission_dialog_explanation_text">To continue please grant access to calendar</string>
+    <string name="permission_dialog_denied_text">This feature is not available without calendar permissions. Open app settings?</string>
+    <string name="dialog_positive_button">OK</string>
+    <string name="dialog_negative_button">Cancel</string>
+    <string name="calendar_event_title">To see a movie \"%1$s\"</string>
 </resources>
