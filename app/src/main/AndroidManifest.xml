@@ -12,7 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Movie">
-        <activity android:name="ru.prometeydev.movie.ui.MainActivity">
+        <activity
+            android:name="ru.prometeydev.movie.ui.MainActivity"
+            android:launchMode="singleTop">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -27,6 +30,7 @@
                     android:pathPattern="/movie/.*"
                     android:scheme="https"/>
             </intent-filter>
+
         </activity>
     </application>
 

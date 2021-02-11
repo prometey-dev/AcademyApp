@@ -13,15 +13,13 @@ import ru.prometeydev.movie.ui.movieslist.MoviesListFragment
 
 class MainActivity : AppCompatActivity() {
 
-    private val workRequest = WorkRequest(applicationContext)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
             setAsRoot(MoviesListFragment.instance())
-            workRequest.startWorker()
+            WorkRequest.getInstance(applicationContext).start()
             intent?.let(::handleIntent)
         }
     }

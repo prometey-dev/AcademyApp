@@ -24,4 +24,9 @@
     <string name="actors_not_laded_message">Actors list not loaded</string>
 
     <string name="retry">Retry</string>
+
+    <string name="chanel_new_top_rated_movie">New top rated movie</string>
+    <string name="chanel_new_top_rated_movie_description">New top rated movie appears</string>
+
+    <string name="new_top_rated_movie_with_rating">New top rated movie appears with raring %1$s</string>
 </resources>

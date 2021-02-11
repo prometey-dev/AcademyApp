@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/background_screen">
+
+    <ImageView
+        android:id="@+id/movie_item_image"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_marginStart="@dimen/margin_tiny"
+        android:layout_marginEnd="@dimen/margin_tiny"
+        android:layout_marginTop="@dimen/margin_tiny"
+        android:foreground="@drawable/foreground_movie_item"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/avengers"/>
+
+    <TextView
+        android:id="@+id/appears"
+        style="@style/SideMarginsStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_tiny"
+        android:textColor="@color/label_movie_genre_color"
+        android:textSize="@dimen/text_size_highest_normal"
+        android:text="@string/chanel_new_top_rated_movie_description"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/movie_item_image"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/movie_name"
+        style="@style/MovieNameStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:textColor="@color/label_movie_name_color"
+        android:textSize="@dimen/text_size_highest_normal"
+        android:textStyle="bold"
+        android:lineSpacingMultiplier="0.9"
+        app:layout_constraintTop_toBottomOf="@id/appears"
+        app:layout_constraintStart_toEndOf="@id/movie_item_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="@string/avengers_end_game"/>
+
+    <RatingBar
+        android:id="@+id/rating"
+        style="?android:attr/ratingBarStyleSmall"
+        android:theme="@style/MyRatingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/margin_small"
+        android:numStars="5"
+        android:stepSize="1"
+        app:layout_constraintStart_toStartOf="@id/movie_name"
+        app:layout_constraintTop_toBottomOf="@id/movie_name"
+        tools:rating="4"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

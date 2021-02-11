@@ -58,6 +58,27 @@ fun mapMovieDtoToEntity(movie: MovieDto, genres: List<Genre>, baseImageUrl: Stri
     )
 }
 
+fun mapMovieDtoToDomain(movie: MovieDto, genres: List<Genre>, baseImageUrl: String): Movie {
+    val genresMap = genres.associateBy { it.id }
+
+    return Movie(
+        id = movie.id,
+        title = movie.title,
+        overview = movie.overview,
+        poster = baseImageUrl.fullImageUrl(movie.posterPicture),
+        backdrop = baseImageUrl.fullImageUrl(movie.backdropPicture),
+        numberOfRatings = movie.votesCount,
+        minimumAge = if (movie.adult) 16 else 13,
+        ratings = movie.ratings,
+        adult = movie.adult,
+        runtime = null,
+        genres = movie.genreIds.map {
+            genresMap[it] ?: throw IllegalArgumentException("Genre not found")
+        },
+        actors = emptyList()
+    )
+}
+
 fun mapListMoviesDtoToEntity(movies: List<MovieDto>, genres: List<Genre>, baseImageUrl: String): List<MovieEntity> {
     return movies.map { mapMovieDtoToEntity(it, genres, baseImageUrl) }
 }

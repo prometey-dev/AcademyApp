@@ -3,7 +3,6 @@ package ru.prometeydev.movie.model
 import androidx.paging.*
 import androidx.room.withTransaction
 import kotlinx.coroutines.*
-import retrofit2.HttpException
 import ru.prometeydev.movie.model.database.MoviesDatabase
 import ru.prometeydev.movie.model.database.entitiy.MovieEntity
 import ru.prometeydev.movie.model.database.entitiy.MoviesRemoteKeysEntity
@@ -12,7 +11,6 @@ import ru.prometeydev.movie.model.mappers.mapListGenresDtoToEntity
 import ru.prometeydev.movie.model.mappers.mapListGenresEntityToDomain
 import ru.prometeydev.movie.model.mappers.mapListMoviesDtoToEntity
 import ru.prometeydev.movie.model.network.MoviesApi
-import java.io.IOException
 import java.io.InvalidObjectException
 
 @ExperimentalPagingApi
@@ -59,9 +57,7 @@ class MoviesRemoteMediator(
                     MoviesRemoteKeysEntity(movieId = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
                 db.keysDao().insertAll(keys)
-                db.moviesDao().insertMovies(
-                        movies = mapListMoviesDtoToEntity(response.results, genres, baseImageUrl)
-                )
+                db.moviesDao().insertMovies(movies = mapListMoviesDtoToEntity(response.results, genres, baseImageUrl))
             }
             return@withContext MediatorResult.Success(endOfPaginationReached = isEndOfList)
         } catch (e: Exception) {

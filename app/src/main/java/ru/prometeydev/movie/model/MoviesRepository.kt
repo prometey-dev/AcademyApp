@@ -3,7 +3,6 @@ package ru.prometeydev.movie.model
 import androidx.paging.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.prometeydev.movie.model.database.MoviesDatabase
 import ru.prometeydev.movie.model.database.entitiy.MoviesRemoteKeysEntity
@@ -11,15 +10,22 @@ import ru.prometeydev.movie.model.domain.Genre
 import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.model.mappers.*
 import ru.prometeydev.movie.model.network.MoviesApi
+import ru.prometeydev.movie.ui.MovieNotifications
 import ru.prometeydev.movie.ui.base.Result
 
 class MoviesRepository(
     private val api: MoviesApi,
-    private val db: MoviesDatabase
+    private val db: MoviesDatabase,
+    private val notifications: MovieNotifications
 ): BaseRepo() {
 
     private var baseImageUrl = ""
     private var genres: List<Genre> = emptyList()
+    private var topRatedMovie: Movie? = null
+
+    init {
+        notifications.initialize()
+    }
 
     fun getMovieById(movieId: Int): Flow<Result<Movie>> = flow {
         emit(Result.Loading)
@@ -45,6 +51,7 @@ class MoviesRepository(
             } else {
                 emit(Result.Success(mapMoviesEntityToDomain(movie)))
             }
+            notifications.dismiss(movie.movieId)
         }
     }.catch { e ->
         emit(Result.Error(e))
@@ -89,7 +96,15 @@ class MoviesRepository(
                     )
                 }
             }
+
+            response.results.maxByOrNull { it.ratings }?.let { movie ->
+                if (movie.ratings > topRatedMovie?.ratings ?: 0f) {
+                    topRatedMovie = mapMovieDtoToDomain(movie, genres, baseImageUrl)
+                }
+            }
         }
+
+        topRatedMovie?.let { notifications.show(it) }
     }
 
     private suspend fun loadGenres(): List<Genre> {
