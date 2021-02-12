@@ -23,13 +23,12 @@ import ru.prometeydev.movie.R
 import ru.prometeydev.movie.model.domain.Movie
 import java.lang.Exception
 
-
 class MovieNotifications(private val context: Context) {
 
     private val imageLoader = ImageLoader.Builder(context)
-            .availableMemoryPercentage(0.25)
-            .crossfade(true)
-            .build()
+        .availableMemoryPercentage(0.25)
+        .crossfade(true)
+        .build()
 
     private val notificationManagerCompat = NotificationManagerCompat.from(context)
 
@@ -37,9 +36,9 @@ class MovieNotifications(private val context: Context) {
         if (notificationManagerCompat.getNotificationChannel(NOTIFY_CHANNEL_ID) == null) {
             notificationManagerCompat.createNotificationChannel(
                 NotificationChannelCompat.Builder(NOTIFY_CHANNEL_ID, IMPORTANCE_HIGH)
-                        .setName(context.getString(R.string.chanel_new_top_rated_movie))
-                        .setDescription(context.getString(R.string.chanel_new_top_rated_movie_description))
-                        .build()
+                    .setName(context.getString(R.string.chanel_new_top_rated_movie))
+                    .setDescription(context.getString(R.string.chanel_new_top_rated_movie_description))
+                    .build()
             )
         }
     }
@@ -47,23 +46,10 @@ class MovieNotifications(private val context: Context) {
     @ExperimentalCoilApi
     @WorkerThread
     suspend fun show(movie: Movie) {
-        try {
-            val contentUri = "https://movie.prometeydev.ru/movie/${movie.id}".toUri()
+        val contentUri = "https://movie.prometeydev.ru/movie/${movie.id}".toUri()
 
-            val smallContentView =
-                RemoteViews(context.packageName, R.layout.notification_small).apply {
-                    setTextViewText(
-                        R.id.appears,
-                        context.getString(R.string.chanel_new_top_rated_movie_description)
-                    )
-                    setTextViewText(R.id.movie_name, movie.title)
-                    setTextViewText(
-                        R.id.rating,
-                        context.getString(R.string.rating_text, movie.ratings.toString())
-                    )
-                }
-
-            val bigContentView = RemoteViews(context.packageName, R.layout.notification_big).apply {
+        val smallContentView =
+            RemoteViews(context.packageName, R.layout.notification_small).apply {
                 setTextViewText(
                     R.id.appears,
                     context.getString(R.string.chanel_new_top_rated_movie_description)
@@ -73,38 +59,47 @@ class MovieNotifications(private val context: Context) {
                     R.id.rating,
                     context.getString(R.string.rating_text, movie.ratings.toString())
                 )
-                setTextViewText(R.id.genres, movie.genres.joinToString { it.name })
-                setTextViewText(R.id.overview, movie.overview)
             }
 
-            val loadSmallImage = loadImage(smallContentView, R.id.movie_image, movie.poster)
-            val loadBigImage = loadImage(bigContentView, R.id.movie_image, movie.poster)
-            loadSmallImage.await()
-            loadBigImage.await()
-
-            val notification = NotificationCompat.Builder(context, NOTIFY_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_movie_notify)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setOnlyAlertOnce(true)
-                .setCustomContentView(smallContentView)
-                .setCustomBigContentView(bigContentView)
-                .setContentIntent(
-                    PendingIntent.getActivity(
-                        context,
-                        REQUEST_CONTENT,
-                        Intent(context, MainActivity::class.java)
-                            .setAction(Intent.ACTION_VIEW)
-                            .setData(contentUri),
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-                )
-                .setWhen(System.currentTimeMillis())
-                .build()
-
-            notificationManagerCompat.notify(NOTIFY_TAG, movie.id, notification)
-        } catch (ex: Exception) {
-            Log.e("error", ex.message ?: "")
+        val bigContentView = RemoteViews(context.packageName, R.layout.notification_big).apply {
+            setTextViewText(
+                R.id.appears,
+                context.getString(R.string.chanel_new_top_rated_movie_description)
+            )
+            setTextViewText(R.id.movie_name, movie.title)
+            setTextViewText(
+                R.id.rating,
+                context.getString(R.string.rating_text, movie.ratings.toString())
+            )
+            setTextViewText(R.id.genres, movie.genres.joinToString { it.name })
+            setTextViewText(R.id.overview, movie.overview)
         }
+
+        val loadSmallImage = loadImage(smallContentView, R.id.movie_image, movie.poster)
+        val loadBigImage = loadImage(bigContentView, R.id.movie_image, movie.poster)
+        loadSmallImage.await()
+        loadBigImage.await()
+
+        val notification = NotificationCompat.Builder(context, NOTIFY_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_movie_notify)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setOnlyAlertOnce(true)
+            .setCustomContentView(smallContentView)
+            .setCustomBigContentView(bigContentView)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    context,
+                    REQUEST_CONTENT,
+                    Intent(context, MainActivity::class.java)
+                        .setAction(Intent.ACTION_VIEW)
+                        .setData(contentUri),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
+            .setWhen(System.currentTimeMillis())
+            .build()
+
+        notificationManagerCompat.notify(NOTIFY_TAG, movie.id, notification)
     }
 
     fun dismiss(movieId: Int) {
@@ -114,9 +109,9 @@ class MovieNotifications(private val context: Context) {
     private fun loadImage(remoteViews: RemoteViews, resId: Int, uri: String?): Disposable {
         val target = RemoteViewsTarget(context, ComponentName(context.packageName, "MainActivity"), remoteViews, resId)
         val request = ImageRequest.Builder(context)
-                .data(uri)
-                .target(target)
-                .build()
+            .data(uri)
+            .target(target)
+            .build()
         return imageLoader.enqueue(request)
     }
 
@@ -127,10 +122,10 @@ class MovieNotifications(private val context: Context) {
     }
 
     private class RemoteViewsTarget(
-            private val context: Context,
-            private val componentName: ComponentName,
-            private val remoteViews: RemoteViews,
-            @IdRes private val imageViewResId: Int
+        private val context: Context,
+        private val componentName: ComponentName,
+        private val remoteViews: RemoteViews,
+        @IdRes private val imageViewResId: Int
     ) : Target {
 
         override fun onStart(placeholder: Drawable?) = setDrawable(placeholder)
