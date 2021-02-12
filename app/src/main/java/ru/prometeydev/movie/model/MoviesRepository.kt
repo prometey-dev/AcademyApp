@@ -1,10 +1,9 @@
 package ru.prometeydev.movie.model
 
 import androidx.paging.*
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import coil.annotation.ExperimentalCoilApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import ru.prometeydev.movie.model.database.MoviesDatabase
 import ru.prometeydev.movie.model.database.entitiy.MoviesRemoteKeysEntity
 import ru.prometeydev.movie.model.domain.Genre
@@ -32,21 +31,20 @@ class MoviesRepository(
         emit(Result.Loading)
 
         withContext(dispatcher) {
-            val loadImageConfig = async {
-                if (baseImageUrl.isEmpty()) {
-                    baseImageUrl = api.getConfiguration().images.secureBaseUrl
-                }
+            val jobBaseImageUrl = launch {
+                baseImageUrl = getImagesBaseUrl()
             }
-
             var movieUri = ""
-            val getMovieUri = async {
+            val jobMovieUri = launch {
                 movieUri = getWatchMovieUri(movieId)
             }
 
             val movie = db.moviesDao().getMovieById(movieId)
             if (movie.actors.isNullOrEmpty()) {
                 val actors = api.getCredits(movieId).actors
-                listOf(loadImageConfig, getMovieUri).awaitAll()
+
+                listOf(jobBaseImageUrl, jobMovieUri).joinAll()
+
                 db.moviesDao().updateMovieWithActors(movieId, mapListActorsDtoToEntity(actors, baseImageUrl))
                 db.moviesDao().updateMovieWithVideo(movieId, movieUri)
                 db.moviesDao().insertActors(
@@ -76,16 +74,19 @@ class MoviesRepository(
         }
     }
 
+    @ExperimentalCoilApi
     suspend fun loadMoviesAndSave() = withContext(dispatcher) {
+        val jobBaseImageUrl = launch {
+            baseImageUrl = getImagesBaseUrl()
+        }
 
-        async {
-            if (genres.isEmpty()) {
-                genres = loadGenres()
-            }
-        }.await()
+        val jobGenres = launch {
+            genres = loadGenres()
+        }
 
         val pagesCount = db.keysDao().selectAll().size / PAGE_SIZE
 
+        listOf(jobBaseImageUrl, jobGenres).joinAll()
         for (page in 1..pagesCount) {
             val response = api.getMoviesPopular(page)
             response.results.forEach { movie ->
@@ -123,11 +124,23 @@ class MoviesRepository(
         }
     }
 
+    private suspend fun getImagesBaseUrl(): String {
+        return if (baseImageUrl.isEmpty()) {
+            api.getConfiguration().images.secureBaseUrl
+        } else {
+            baseImageUrl
+        }
+    }
+
     private suspend fun loadGenres(): List<Genre> {
-        val data = api.getGenresList()
-        val genres = mapListGenresDtoToEntity(data.genres)
-        db.moviesDao().insertGenres(genres)
-        return mapListGenresEntityToDomain(genres)
+        return if (genres.isEmpty()) {
+            val data = api.getGenresList()
+            val genres = mapListGenresDtoToEntity(data.genres)
+            db.moviesDao().insertGenres(genres)
+            mapListGenresEntityToDomain(genres)
+        } else {
+            genres
+        }
     }
 
     companion object {

@@ -31,17 +31,13 @@ class MoviesRemoteMediator(
 
         return@withContext try {
 
-            val loadImageConfig = async {
-                if (baseImageUrl.isEmpty()) {
-                    baseImageUrl = api.getConfiguration().images.secureBaseUrl
-                }
+            val jobBaseImageUrl = launch {
+                baseImageUrl = getImagesBaseUrl()
             }
-            val loadGenres = async {
-                if (genres.isEmpty()) {
-                    genres = loadGenres()
-                }
+
+            val jobGenres = launch {
+                genres = loadGenres()
             }
-            listOf(loadImageConfig, loadGenres).awaitAll()
 
             val response = api.getMoviesPopular(page)
 
@@ -56,6 +52,7 @@ class MoviesRemoteMediator(
                 val keys = response.results.map {
                     MoviesRemoteKeysEntity(movieId = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
+                listOf(jobBaseImageUrl, jobGenres).joinAll()
                 db.keysDao().insertAll(keys)
                 db.moviesDao().insertMovies(movies = mapListMoviesDtoToEntity(response.results, genres, baseImageUrl))
             }
@@ -66,11 +63,23 @@ class MoviesRemoteMediator(
 
     }
 
+    private suspend fun getImagesBaseUrl(): String {
+        return if (baseImageUrl.isEmpty()) {
+            api.getConfiguration().images.secureBaseUrl
+        } else {
+            baseImageUrl
+        }
+    }
+
     private suspend fun loadGenres(): List<Genre> {
-        val data = api.getGenresList()
-        val genres = mapListGenresDtoToEntity(data.genres)
-        db.moviesDao().insertGenres(genres)
-        return mapListGenresEntityToDomain(genres)
+        return if (genres.isEmpty()) {
+            val data = api.getGenresList()
+            val genres = mapListGenresDtoToEntity(data.genres)
+            db.moviesDao().insertGenres(genres)
+            mapListGenresEntityToDomain(genres)
+        } else {
+            genres
+        }
     }
 
     private suspend fun getKeyPageData(loadType: LoadType, state: PagingState<Int, MovieEntity>): Any? {
