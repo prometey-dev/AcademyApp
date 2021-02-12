@@ -54,6 +54,7 @@ class MoviesDetailsFragment : BaseFragment<Movie>() {
     private var overview: TextView? = null
 
     private var buttonSchedule: AppCompatButton? = null
+    private var buttonTrailer: AppCompatButton? = null
 
     private var movieTitle = ""
     private var isRationaleShown = false
@@ -92,6 +93,7 @@ class MoviesDetailsFragment : BaseFragment<Movie>() {
         timeMovie = view.findViewById(R.id.time_movie)
         overview = view.findViewById(R.id.description)
         buttonSchedule = view.findViewById(R.id.schedule_watch)
+        buttonTrailer = view.findViewById(R.id.watch_trailer)
 
         recycler = view.findViewById<RecyclerView>(R.id.actor_list).apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
@@ -162,11 +164,15 @@ class MoviesDetailsFragment : BaseFragment<Movie>() {
 
         buttonSchedule?.setOnClickListener {
             movieTitle = data.title
-            onScheduleWatch()
+            onAddToCalendar()
+        }
+
+        buttonTrailer?.setOnClickListener {
+            onWatchTrailer(data.video)
         }
     }
 
-    private fun onScheduleWatch() {
+    private fun onAddToCalendar() {
         when {
             ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_CALENDAR)
                     == PackageManager.PERMISSION_GRANTED -> onCalendarPermissionGrated()
@@ -229,6 +235,16 @@ class MoviesDetailsFragment : BaseFragment<Movie>() {
                 .show()
     }
 
+    private fun onWatchTrailer(video: String) {
+        if (video.isNotEmpty()) {
+            Intent(Intent.ACTION_VIEW, Uri.parse(video)).also {
+                startActivity(it)
+            }
+        } else {
+            showMessage(getString(R.string.no_video_found_message))
+        }
+    }
+
     companion object {
 
         fun instance(movieId: Int) = MoviesDetailsFragment().apply {
@@ -237,7 +253,7 @@ class MoviesDetailsFragment : BaseFragment<Movie>() {
             }
         }
 
-        const val MOVIE_ID = "MOVIE_ID"
+        private const val MOVIE_ID = "MOVIE_ID"
 
     }
 

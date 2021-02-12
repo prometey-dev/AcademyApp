@@ -21,6 +21,9 @@ interface MoviesDao {
     @Query("UPDATE movies SET actors = :actors WHERE movieId = :movieId")
     suspend fun updateMovieWithActors(movieId: Int, actors: List<ActorEntity>): Int
 
+    @Query("UPDATE movies SET video = :video WHERE movieId = :movieId")
+    suspend fun updateMovieWithVideo(movieId: Int, video: String)
+
     @Query("SELECT * FROM movies WHERE movieId = :movieId")
     suspend fun getMovieById(movieId: Int): MovieEntity
 

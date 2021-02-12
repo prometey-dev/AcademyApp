@@ -31,7 +31,8 @@ fun mapMoviesEntityToDomain(movie: MovieEntity): Movie {
             adult = movie.adult,
             runtime = movie.runtime,
             genres = movie.genres.map { Genre(it.id, it.name) },
-            actors = movie.actors.map { Actor(it.id, it.name, it.picturePath) }
+            actors = movie.actors.map { Actor(it.id, it.name, it.picturePath) },
+            video = movie.video
     )
 }
 
@@ -54,7 +55,8 @@ fun mapMovieDtoToEntity(movie: MovieDto, genres: List<Genre>, baseImageUrl: Stri
             genres = movie.genreIds.map {
                 genresMap[it] ?: throw IllegalArgumentException("Genre not found")
             },
-            actors = emptyList()
+            actors = emptyList(),
+            video = ""
     )
 }
 
@@ -75,7 +77,8 @@ fun mapMovieDtoToDomain(movie: MovieDto, genres: List<Genre>, baseImageUrl: Stri
         genres = movie.genreIds.map {
             genresMap[it] ?: throw IllegalArgumentException("Genre not found")
         },
-        actors = emptyList()
+        actors = emptyList(),
+        video = ""
     )
 }
 

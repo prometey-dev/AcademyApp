@@ -2,6 +2,7 @@ package ru.prometeydev.movie.model
 
 import androidx.paging.*
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import ru.prometeydev.movie.model.database.MoviesDatabase
@@ -37,11 +38,17 @@ class MoviesRepository(
                 }
             }
 
+            var movieUri = ""
+            val getMovieUri = async {
+                movieUri = getWatchMovieUri(movieId)
+            }
+
             val movie = db.moviesDao().getMovieById(movieId)
             if (movie.actors.isNullOrEmpty()) {
                 val actors = api.getCredits(movieId).actors
-                loadImageConfig.await()
+                listOf(loadImageConfig, getMovieUri).awaitAll()
                 db.moviesDao().updateMovieWithActors(movieId, mapListActorsDtoToEntity(actors, baseImageUrl))
+                db.moviesDao().updateMovieWithVideo(movieId, movieUri)
                 db.moviesDao().insertActors(
                     actors = mapListActorsDtoToEntity(actors, baseImageUrl)
                 )
@@ -107,6 +114,15 @@ class MoviesRepository(
         topRatedMovie?.let { notifications.show(it) }
     }
 
+    private suspend fun getWatchMovieUri(movieId: Int): String {
+        val videos = api.getVideosByMovieId(movieId).results
+        return if (videos.isNotEmpty()) {
+            YOUTUBE_URI_WITHOUT_KEY + videos.first().key
+        } else {
+            ""
+        }
+    }
+
     private suspend fun loadGenres(): List<Genre> {
         val data = api.getGenresList()
         val genres = mapListGenresDtoToEntity(data.genres)
@@ -116,6 +132,7 @@ class MoviesRepository(
 
     companion object {
         private const val PAGE_SIZE = 20
+        private const val YOUTUBE_URI_WITHOUT_KEY = "https://www.youtube.com/watch?v="
     }
 
 }

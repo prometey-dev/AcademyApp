@@ -15,6 +15,9 @@ interface MoviesApi {
     @GET("movie/popular")
     suspend fun getMoviesPopular(@Query("page") page: Int): PopularMoviesDto
 
+    @GET("movie/{movie_id}/videos")
+    suspend fun getVideosByMovieId(@Path("movie_id") movieId: Int): VideosMovieResponse
+
     @GET("genre/movie/list")
     suspend fun getGenresList(): GenresDto
 
