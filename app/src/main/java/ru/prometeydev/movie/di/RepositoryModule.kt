@@ -4,5 +4,5 @@ import org.koin.dsl.module
 import ru.prometeydev.movie.model.MoviesRepository
 
 val repoModule = module {
-    single { MoviesRepository(api = get(), dao = get()) }
+    single { MoviesRepository(api = get(), db = get()) }
 }

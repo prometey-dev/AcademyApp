@@ -19,43 +19,9 @@ import java.lang.Exception
 
 abstract class BaseRepo {
 
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    protected val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
     private val moshi: Moshi = Moshi.Builder().build()
-
-    fun <MODEL, ENTITY, REMOTE> networkBoundResult(
-            fetchFromLocal: () -> Flow<ENTITY>,
-            mapEntityToModel: (ENTITY) -> MODEL,
-            shouldFetchFromRemote: (ENTITY?) -> Boolean = { true },
-            fetchFromRemote: () -> Flow<ApiResponse<REMOTE>>,
-            saveRemoteData: (REMOTE) -> Unit = { },
-    ) = flow {
-        emit(Result.Loading)
-
-        val localData = fetchFromLocal().first()
-
-        if (shouldFetchFromRemote(localData)) {
-            emit(Result.Loading)
-
-            fetchFromRemote().collect { apiResponse ->
-                when (apiResponse) {
-                    is ApiSuccessResponse -> {
-                        apiResponse.body?.let { saveRemoteData(it) }
-                    }
-
-                    is ApiErrorResponse -> {
-                        emit(Result.Error(apiResponse.errorMessage))
-                    }
-                }
-            }
-        }
-
-        emitAll(
-            fetchFromLocal()
-                .map { mapEntityToModel(it) }
-                .map { Result.Success(it) }
-        )
-    }.flowOn(dispatcher)
 
     protected suspend fun <T> execute(request: suspend () -> T) = withContext(dispatcher) {
         try {

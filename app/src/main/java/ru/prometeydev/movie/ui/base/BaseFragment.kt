@@ -49,7 +49,7 @@ abstract class BaseFragment<T> : Fragment() {
             }
             is Result.Error -> {
                 loader?.isVisible = false
-                showMessage(result.message)
+                showMessage(result.error.message ?: "Unknown error")
             }
             is Result.Success<*> -> {
                 loader?.isVisible = false

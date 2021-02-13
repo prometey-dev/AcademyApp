@@ -8,7 +8,8 @@ import ru.prometeydev.movie.model.network.dto.ActorDto
 @Entity(tableName = "movies")
 data class MovieEntity(
         @PrimaryKey(autoGenerate = true)
-        val id: Int,
+        val pk: Int = 0,
+        val movieId: Int,
         val title: String,
         val overview: String?,
         val posterPath: String?,

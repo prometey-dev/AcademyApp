@@ -8,6 +8,7 @@ import android.widget.Button
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.CombinedLoadStates
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
@@ -71,6 +72,7 @@ class MoviesListFragment : BaseFragment<PagingData<Movie>>() {
         }
     }
 
+    @ExperimentalPagingApi
     override fun loadData() {
         viewModel.loadMovies()
     }
@@ -136,7 +138,7 @@ class MoviesListFragment : BaseFragment<PagingData<Movie>>() {
         const val VERTICAL_SPAN_COUNT = 2
         const val HORIZONTAL_SPAN_COUNT = 4
 
-        const val BUNDLE_RECYCLER_LAYOUT = "BUNDLE_RECYCLER_LAYOUT "
+        const val BUNDLE_RECYCLER_LAYOUT = "BUNDLE_RECYCLER_LAYOUT"
     }
 
 }
