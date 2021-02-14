@@ -15,7 +15,7 @@ class WorkRequest(private val appContext: Context) {
         MoviesWorker::class.java, REPEAT_INTERVAL, TimeUnit.MINUTES, FLEX_INTERVAL, TimeUnit.MINUTES
     ).setConstraints(constraints).build()
 
-    fun startWorker() {
+    fun start() {
         WorkManager.getInstance(appContext).enqueueUniquePeriodicWork(
                 MOVIES_PERIODIC_WORK, ExistingPeriodicWorkPolicy.REPLACE, periodicRequest
         )
@@ -25,6 +25,8 @@ class WorkRequest(private val appContext: Context) {
         private const val MOVIES_PERIODIC_WORK = "MOVIES_PERIODIC_WORK"
         private const val REPEAT_INTERVAL = 15L
         private const val FLEX_INTERVAL = 1L
+
+        fun getInstance(appContext: Context) = WorkRequest(appContext)
     }
 
 }

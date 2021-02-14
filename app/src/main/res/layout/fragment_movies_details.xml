@@ -109,14 +109,42 @@
             app:layout_constraintTop_toBottomOf="@id/rating"
             tools:text="137 min"/>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/schedule_watch"
+            android:layout_width="168dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/margin_big"
+            android:background="@drawable/button_active_main"
+            android:textColor="@color/white"
+            android:textAllCaps="true"
+            android:text="@string/button_schedule_watch"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/watch_trailer"
+            app:layout_constraintTop_toBottomOf="@id/time_movie"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/watch_trailer"
+            android:layout_width="168dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/margin_big"
+            android:background="@drawable/button_active_main"
+            android:textColor="@color/white"
+            android:textAllCaps="true"
+            android:text="@string/button_trailer_watch"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/schedule_watch"
+            app:layout_constraintTop_toBottomOf="@id/time_movie"/>
+
         <TextView
             android:id="@+id/storyline"
             style="@style/StorylineStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/storyline_margin_top"
+            android:layout_marginTop="@dimen/margin_big"
             android:text="@string/storyline"
-            app:layout_constraintTop_toBottomOf="@id/time_movie"
+            app:layout_constraintTop_toBottomOf="@id/schedule_watch"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -149,6 +177,7 @@
             android:layout_marginStart="@dimen/margin_big"
             android:layout_marginEnd="@dimen/margin_big"
             android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_big"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/cast"

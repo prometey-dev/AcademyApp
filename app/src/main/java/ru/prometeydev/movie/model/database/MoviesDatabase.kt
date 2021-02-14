@@ -20,7 +20,7 @@ import ru.prometeydev.movie.model.database.entitiy.MoviesRemoteKeysEntity
         MovieEntity::class,
         MoviesRemoteKeysEntity::class
     ],
-    version = 8,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(DataConverter::class)

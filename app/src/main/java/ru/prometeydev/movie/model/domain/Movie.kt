@@ -12,5 +12,6 @@ data class Movie(
         val adult: Boolean,
         val runtime: Int? = null,
         val genres: List<Genre> = emptyList(),
-        val actors: List<Actor> = emptyList()
+        val actors: List<Actor> = emptyList(),
+        val video: String? = null
 )

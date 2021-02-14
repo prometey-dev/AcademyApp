@@ -10,7 +10,10 @@ import ru.prometeydev.movie.model.database.entitiy.MovieEntity
 interface MoviesDao {
 
     @Query("SELECT * FROM movies")
-    fun getAllMovies(): PagingSource<Int, MovieEntity>
+    fun getPagingSourceMovies(): PagingSource<Int, MovieEntity>
+
+    @Query("SELECT * FROM movies")
+    suspend fun getAllMovies(): List<MovieEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovies(movies: List<MovieEntity>)
@@ -20,6 +23,9 @@ interface MoviesDao {
 
     @Query("UPDATE movies SET actors = :actors WHERE movieId = :movieId")
     suspend fun updateMovieWithActors(movieId: Int, actors: List<ActorEntity>): Int
+
+    @Query("UPDATE movies SET video = :video WHERE movieId = :movieId")
+    suspend fun updateMovieWithVideo(movieId: Int, video: String)
 
     @Query("SELECT * FROM movies WHERE movieId = :movieId")
     suspend fun getMovieById(movieId: Int): MovieEntity
