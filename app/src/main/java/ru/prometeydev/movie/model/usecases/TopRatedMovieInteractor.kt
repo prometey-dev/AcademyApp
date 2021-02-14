@@ -10,14 +10,17 @@ class TopRatedMovieInteractor : BaseUseCases() {
 
     suspend fun getNewTopRatedMovie(): Movie? {
         val movies = repo.db.moviesDao().getAllMovies()
+        val isTopRatedMovieUpdated = false
         return movies.maxByOrNull { it.ratings }?.let { movie ->
-            if (movie.ratings > topRatedMovie?.ratings ?: 0f) {
+            if (
+                movie.ratings > topRatedMovie?.ratings ?: 0f
+                && topRatedMovie?.id != movie.movieId
+            ) {
                 topRatedMovie = mapMoviesEntityToDomain(movie)
-            }
-
-            if (topRatedMovie?.id != movie.movieId)
                 topRatedMovie
-            else null
+            } else {
+                null
+            }
         }
     }
 
