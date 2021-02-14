@@ -8,7 +8,7 @@ import ru.prometeydev.movie.ui.base.BaseViewModel
 import ru.prometeydev.movie.ui.base.Result
 
 class MoviesDetailsViewModel(
-        private val repository: MoviesInteractor,
+        private val interactor: MoviesInteractor,
         private val notifications: MovieNotifications
 ) : BaseViewModel<Movie>() {
 
@@ -17,7 +17,7 @@ class MoviesDetailsViewModel(
     fun loadMovie(movieId: Int) {
         notifications.dismiss(movieId)
         requestWithStateFlowFromResult {
-            repository.getMovieById(movieId)
+            interactor.getMovieById(movieId)
         }
     }
 

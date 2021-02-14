@@ -10,7 +10,7 @@ import ru.prometeydev.movie.ui.base.BaseViewModel
 import ru.prometeydev.movie.ui.base.Result
 
 class MoviesListViewModel(
-    private val repository: MoviesInteractor
+    private val interactor: MoviesInteractor
 ): BaseViewModel<PagingData<Movie>>() {
 
     private var currentMoviesResult: Flow<PagingData<Movie>>? = null
@@ -25,7 +25,7 @@ class MoviesListViewModel(
         }
 
         requestWithStateFlow {
-            val newResult = repository.letMoviesFlowDb().cachedIn(viewModelScope)
+            val newResult = interactor.letMoviesFlowDb().cachedIn(viewModelScope)
             currentMoviesResult = newResult
             newResult
         }
