@@ -21,5 +21,5 @@ data class MovieEntity(
         val runtime: Int?,
         val genres: List<GenreEntity>,
         val actors: List<ActorEntity>,
-        val video: String
+        val video: String?
 )

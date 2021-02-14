@@ -5,12 +5,12 @@ import androidx.paging.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import ru.prometeydev.movie.model.domain.Movie
-import ru.prometeydev.movie.model.MoviesRepository
+import ru.prometeydev.movie.model.usecases.MoviesInteractor
 import ru.prometeydev.movie.ui.base.BaseViewModel
 import ru.prometeydev.movie.ui.base.Result
 
 class MoviesListViewModel(
-    private val repository: MoviesRepository
+    private val repository: MoviesInteractor
 ): BaseViewModel<PagingData<Movie>>() {
 
     private var currentMoviesResult: Flow<PagingData<Movie>>? = null

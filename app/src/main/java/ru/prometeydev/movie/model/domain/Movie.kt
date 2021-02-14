@@ -13,5 +13,5 @@ data class Movie(
         val runtime: Int? = null,
         val genres: List<Genre> = emptyList(),
         val actors: List<Actor> = emptyList(),
-        val video: String
+        val video: String? = null
 )

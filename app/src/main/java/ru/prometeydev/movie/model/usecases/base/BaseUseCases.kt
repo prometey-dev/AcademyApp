@@ -1,23 +1,23 @@
-package ru.prometeydev.movie.model
+package ru.prometeydev.movie.model.usecases.base
 
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import retrofit2.HttpException
 import ru.prometeydev.movie.common.errors.ConnectionErrorException
 import ru.prometeydev.movie.common.errors.ErrorResponseException
 import ru.prometeydev.movie.common.errors.UnexpectedErrorException
+import ru.prometeydev.movie.model.Repo
 import ru.prometeydev.movie.model.network.dto.ErrorResponse
-import ru.prometeydev.movie.model.network.response.ApiErrorResponse
-import ru.prometeydev.movie.model.network.response.ApiResponse
-import ru.prometeydev.movie.model.network.response.ApiSuccessResponse
-import ru.prometeydev.movie.ui.base.Result
 import java.io.IOException
 import java.lang.Exception
 
-abstract class BaseRepo {
+abstract class BaseUseCases() : KoinComponent {
+
+    protected val repo: Repo by inject()
 
     protected val dispatcher: CoroutineDispatcher = Dispatchers.IO
 

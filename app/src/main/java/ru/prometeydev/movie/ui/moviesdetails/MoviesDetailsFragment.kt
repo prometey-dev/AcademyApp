@@ -168,7 +168,7 @@ class MoviesDetailsFragment : BaseFragment<Movie>() {
         }
 
         buttonTrailer?.setOnClickListener {
-            onWatchTrailer(data.video)
+            onWatchTrailer(data.video ?: "")
         }
     }
 

@@ -10,7 +10,10 @@ import ru.prometeydev.movie.model.database.entitiy.MovieEntity
 interface MoviesDao {
 
     @Query("SELECT * FROM movies")
-    fun getAllMovies(): PagingSource<Int, MovieEntity>
+    fun getPagingSourceMovies(): PagingSource<Int, MovieEntity>
+
+    @Query("SELECT * FROM movies")
+    suspend fun getAllMovies(): List<MovieEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovies(movies: List<MovieEntity>)

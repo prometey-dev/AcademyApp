@@ -56,7 +56,7 @@ fun mapMovieDtoToEntity(movie: MovieDto, genres: List<Genre>, baseImageUrl: Stri
                 genresMap[it] ?: throw IllegalArgumentException("Genre not found")
             },
             actors = emptyList(),
-            video = ""
+            video = null
     )
 }
 
@@ -78,7 +78,7 @@ fun mapMovieDtoToDomain(movie: MovieDto, genres: List<Genre>, baseImageUrl: Stri
             genresMap[it] ?: throw IllegalArgumentException("Genre not found")
         },
         actors = emptyList(),
-        video = ""
+        video = null
     )
 }
 
