@@ -27,5 +27,7 @@
     <dimen name="text_size_normal">12sp</dimen>
     <dimen name="text_size_highest_normal">14sp</dimen>
     <dimen name="movie_name_text_size">40sp</dimen>
+    <dimen name="text_size_back_button">20sp</dimen>
+    <dimen name="text_size_notify_header">18sp</dimen>
 
 </resources>

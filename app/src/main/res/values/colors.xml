@@ -20,4 +20,5 @@
 
     <color name="card_movie_background">#FF222232</color>
     <color name="card_border_color">#7F636375</color>
+    <color name="rating_notify_color">#FF8036E7</color>
 </resources>
