@@ -3,10 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/card_view"
     android:layout_width="@dimen/card_movie_width"
     android:layout_height="@dimen/card_movie_height"
     android:layout_margin="@dimen/margin_small"
     android:foreground="@drawable/bg_roundrect_card_border"
+    android:transitionGroup="true"
     app:cardCornerRadius="10dp"
     app:cardBackgroundColor="@color/card_border_color">
 

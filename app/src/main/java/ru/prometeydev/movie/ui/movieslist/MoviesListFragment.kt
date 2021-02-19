@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import android.widget.Button
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.CombinedLoadStates
@@ -13,6 +14,9 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialElevationScale
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -34,6 +38,12 @@ class MoviesListFragment : BaseFragment<PagingData<Movie>>() {
     private var savedRecyclerLayoutState: Parcelable? = null
 
     override fun layoutId() = R.layout.fragment_movies_list
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+    }
 
     override fun initViews(view: View) {
         spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
@@ -121,14 +131,26 @@ class MoviesListFragment : BaseFragment<PagingData<Movie>>() {
         errorState?.let { showMessage(it.error.message ?: "") }
     }
 
-    private fun doOnClick(movie: Movie) {
+    private fun doOnClick(movie: Movie, view: View) {
         onSaveInstanceState(Bundle())
 
-        show(MoviesDetailsFragment.instance(movie.id))
+        exitTransition = MaterialElevationScale(false).apply {
+            duration = resources.getInteger(R.integer.shared_element_transition_duration).toLong()
+        }
+
+        reenterTransition = MaterialElevationScale(true).apply {
+            duration = resources.getInteger(R.integer.shared_element_transition_duration).toLong()
+        }
+
+        parentFragmentManager.beginTransaction()
+            .addSharedElement(view, getString(R.string.shared_element_container))
+            .replace(R.id.main_container, MoviesDetailsFragment.instance(movie.id))
+            .addToBackStack(null)
+            .commit()
     }
 
     private val clickListener = object : MoviesAdapter.OnRecyclerItemClicked {
-        override fun onClick(movie: Movie) = doOnClick(movie)
+        override fun onClick(movie: Movie, view: View) = doOnClick(movie, view)
     }
 
     companion object {
