@@ -120,6 +120,7 @@
             android:textAllCaps="true"
             android:text="@string/button_schedule_watch"
             android:textSize="@dimen/text_size_normal"
+            app:rippleColor="#FFFF3365"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/watch_trailer"
             app:layout_constraintTop_toBottomOf="@id/time_movie"/>
