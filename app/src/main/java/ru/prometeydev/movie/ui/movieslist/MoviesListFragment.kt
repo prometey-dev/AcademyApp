@@ -68,7 +68,6 @@ class MoviesListFragment : BaseFragment<PagingData<Movie>>() {
     }
 
     override fun destroyViews() {
-        recycler?.adapter = null
         recycler = null
         retryButton = null
     }
