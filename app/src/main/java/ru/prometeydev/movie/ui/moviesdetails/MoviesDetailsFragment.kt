@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -26,12 +27,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 import ru.prometeydev.movie.R
 import ru.prometeydev.movie.common.popBack
 import ru.prometeydev.movie.common.showMessage
+import ru.prometeydev.movie.common.themeColor
 import ru.prometeydev.movie.model.domain.Movie
 import ru.prometeydev.movie.ui.base.BaseFragment
 import ru.prometeydev.movie.ui.movieslist.calculateStarsCount
@@ -81,6 +84,19 @@ class MoviesDetailsFragment : BaseFragment<Movie>() {
     }
 
     override fun layoutId() = R.layout.fragment_movies_details
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.main_container
+            duration = resources.getInteger(R.integer.shared_element_transition_duration).toLong()
+            scrimColor = Color.TRANSPARENT
+            setAllContainerColors(requireContext().themeColor(R.attr.colorSurface))
+        }
+    }
+
+
 
     override fun initViews(view: View) {
         buttonBack = view.findViewById(R.id.button_back)

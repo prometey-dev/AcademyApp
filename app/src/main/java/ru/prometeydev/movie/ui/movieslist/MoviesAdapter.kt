@@ -35,7 +35,7 @@ class MoviesAdapter(
      * Интерфейс для обработки нажатия на элементе списка
      */
     interface OnRecyclerItemClicked {
-        fun onClick(movie: Movie)
+        fun onClick(movie: Movie, view: View)
     }
 
     /**
@@ -52,6 +52,8 @@ class MoviesAdapter(
         private val like = itemView.findViewById<ImageView>(R.id.like_heart)
 
         fun onBind(movie: Movie, clickListener: OnRecyclerItemClicked) {
+            itemView.transitionName = context.getString(R.string.shared_element_container_with_id, movie.id.toString())
+
             name.text = movie.title
             genre.text = movie.genres.joinToString { it.name }
             rating.rating = movie.ratings.calculateStarsCount()
@@ -66,7 +68,7 @@ class MoviesAdapter(
             }
 
             itemView.setOnClickListener {
-                clickListener.onClick(movie)
+                clickListener.onClick(movie, itemView)
             }
         }
 

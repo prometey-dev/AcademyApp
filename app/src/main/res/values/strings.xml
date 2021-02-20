@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Movie</string>
 
+    <string name="shared_element_container">shared_element_container</string>
+    <string name="shared_element_container_with_id">shared_element_container_$1%s</string>
+
     <string name="internet_connection_error_text">Internet connection error</string>
     <string name="parsing_error_text">Json parsing error</string>
     <string name="unexpected_error_text">Unexpected error happened</string>
